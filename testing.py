@@ -3,6 +3,7 @@
 from puzzlegame_setup import initial_positions
 from positions import Positions
 import puzzlesolver as ps
+import puzzlesolver_extra as pse
 
 
 # reilu 1000 askelta
@@ -21,5 +22,16 @@ import puzzlesolver as ps
 #solution = ps.solve_opt_w_fd(Positions(0, initial_positions))
 #solution = ps.solve_opt_w_10d(Positions(0, initial_positions))
 #solution = ps.solve_opt_w_10d(Positions(0, initial_positions))
-solution = ps.solve_opt_from_scratch(Positions(0, initial_positions))
+# solution = ps.solve_opt_from_scratch(Positions(0, initial_positions))
+import time
+start_time = time.time()
+
+solution = ps.find_opt_soln(Positions())
+
+end_time = time.time()
+elapsed_time = end_time - start_time
+hours = elapsed_time // 3600
+minutes = (elapsed_time - hours * 3600) // 60
+print(elapsed_time, hours, minutes)
+
 print(len(solution))

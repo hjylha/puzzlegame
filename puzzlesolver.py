@@ -1,7 +1,7 @@
 from puzzlegame_setup import piece_num, initial_positions
 from positions import Positions, pos_with_stepnum, write_pos_list_to_file
 # from positions import index_of_pos_in_list
-from move import move_ok, make_move
+from move import move_ok, make_move, fix_pos_list
 
 ''' 
     let's use big knowledge 
@@ -15,6 +15,17 @@ def does_all_pos_file_exist():
         # check that the file contains all positions
         all_pos = all_pos_13011.pos_list
         if len(all_pos) != 13011:
+            return False
+        return True
+    except ModuleNotFoundError:
+        return False
+
+# check the file "solution_opt_117.py" for later
+def does_soln_117_file_exist():
+    try:
+        import solution_opt_117
+        soln = solution_opt_117.solution_117
+        if len(soln) != 117:
             return False
         return True
     except ModuleNotFoundError:
@@ -101,5 +112,72 @@ def generate_pos_files():
     filename2 = "all_pos_" + str(len(all_pos)) + ".py"
     print(len(all_pos), "positions with distances to end found and written to file " + filename2)
 
+# Finding and saving an optimal solution with default starting position
+def find_opt_soln(starting_pos):
+    all_att = [starting_pos]
+    latest_pos = [starting_pos]
+    soln_opt = []
+    # first try to find the end
+    found_the_end = False
+    # num_of_steps_taken = 1
+    while not(found_the_end):
+        updated_latest_pos = []
+        for pos in latest_pos:
+            for move in range(piece_num * 4):
+                if move_ok(move, pos):
+                    next_pos = make_move(move, pos)
+                    # if next_pos has not been visited
+                    if not(next_pos in all_att):
+                        all_att.append(next_pos)
+                        if next_pos.pieces[-1] == [3,1]:
+                            num_of_steps = next_pos.stepnum
+                            print(num_of_steps, "steps in solution")
+                            soln_opt.append(next_pos)
+                            soln_opt.append(pos)
+                            found_the_end = True
+                        updated_latest_pos.append(next_pos)
+        latest_pos = updated_latest_pos
+        # print(num_of_steps_taken, len(latest_pos))
+        # num_of_steps_taken += 1
+    # backtracking to the start using the all_att
+    for i in range(1, num_of_steps):
+        curr_stepnum = num_of_steps - i - 1
+        next_pos = soln_opt[-1]
+        potential_pos = pos_with_stepnum(curr_stepnum, all_att)
+        for move in range(piece_num * 4):
+            if move_ok(move, next_pos):
+                pos = make_move(move, next_pos)
+                if pos in potential_pos:
+                    soln_opt.append(pos)
+                    print("Found step", curr_stepnum)
+                    break
+    # remember to reverse the order of soln_opt
+    soln_opt.reverse()
+    return fix_pos_list(soln_opt)
 
+# use all_pos file to generate an optimal solution
+def generate_soln_from_all_pos():
+    import all_pos_13011
+    all_pos = all_pos_13011.pos_list
+    start_pos = Positions()
+    num_of_steps = all_pos[all_pos.index(start_pos)].stepnum
+    soln = [start_pos]
+    for i in range(1, num_of_steps + 1):
+        curr_pos = soln[-1]
+        potential_pos = pos_with_stepnum(num_of_steps - i, all_pos)
+        for move in range(4 * piece_num):
+            if move_ok(move, curr_pos):
+                pos = make_move(move, curr_pos)
+                if pos in potential_pos:
+                    soln.append(pos)
+                    break
+    filename = "solution_opt_" + str(len(soln)) + ".py"
+    write_pos_list_to_file(soln, "solution_opt")
+    print("Optimal solution saved to file " + filename)
+
+def generate_soln():
+    soln_opt = find_opt_soln(Positions())
+    filename = "solution_opt_" + str(len(soln_opt)) + ".py"
+    write_pos_list_to_file(soln_opt, "solution_opt")
+    print("Optimal solution saved to file " + filename)
 

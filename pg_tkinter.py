@@ -4,7 +4,7 @@ from puzzlegame_setup import directions, piece_colors, piece_symbols
 from positions import Positions
 import move as mv
 import puzzlesolver as ps
-import solution_opt_117
+# import solution_opt_117
 
 # window with two frames on the left and one on the right
 main_window = tk.Tk()
@@ -48,11 +48,32 @@ def show_generation_popup():
     from tkinter import messagebox
     explanation = "The file all_pos_13011.py was not found. It is needed for finding optimal solutions fast. Do you want to generate this file now? The process may take a couple of hours."
     start_generating = messagebox.askyesno("Generating positions", explanation)
-    if(start_generating):
-        solving_text1.config(text="Generating files, please wait")
-        print("Generating files...")
-        ps.generate_pos_files()
-        solving_text1.config(text="File generated")
+    if start_generating:
+        # final check about whether the files exist already
+        if not(ps.does_all_pos_file_exist()):
+            solving_text1.config(text="Generating files, please wait")
+            print("Generating files...")
+            ps.generate_pos_files()
+            solving_text1.config(text="File generated")
+
+def show_generation_popup2():
+    from tkinter import messagebox
+    explanation = "The file containing optimal solution was not found. Do you want to calculate the optimal solution? The process may take a couple of hours."
+    start_generating = messagebox.askyesno("Generating optimal solution", explanation)
+    if start_generating:
+        if not(ps.does_soln_117_file_exist()):
+            if ps.does_all_pos_file_exist():
+                solving_text1.config(text="Finding solution, please wait")
+                print("Finding solution from Big Data")
+                ps.generate_soln_from_all_pos()
+                solving_text1.config(text="Solution found")
+                solution_from_start()
+            else:
+                solving_text1.config(text="Finding solution, please wait")
+                print("Solving...")
+                ps.generate_soln()
+                solving_text1.config(text="Solution found")
+                solution_from_start()
 
 def restart():
     global active_piece, highlighted, current_pos, pos_log, move_log, solution_mode
@@ -147,6 +168,12 @@ def try_move(empty_id):
 def solution_from_start():
     global highlighted, active_piece, current_pos, pos_log, move_log, solution_mode
     global pos_log_opt, move_log_opt, index_opt
+    if not(ps.does_soln_117_file_exist()):
+        # solution file was not found
+        solving_text1.config(text="Solution file not found")
+        show_generation_popup2()
+        return
+    import solution_opt_117
     restart()
     solution_mode = True
     index_opt = 0
@@ -160,24 +187,18 @@ def solution_from_start():
 def solution_from_pos():
     global highlighted, active_piece, current_pos, pos_log, move_log, solution_mode
     global pos_log_opt, move_log_opt, index_opt
-    solution_mode = True
-    solving_text1.config(text="Searching...")
-    index_opt = len(pos_log) - 1
-    # soln_ref = solution_opt_117.solution_117
-    # current_pos = pos_log[-1]
-    if ps.does_all_pos_file_exist():
-        pos_list = ps.solve_opt_w_fd(current_pos)[0]
-    # solver_output = ps.solve_opt_w_fd(current_pos)
-    # pos_list = ps.solve_opt_w_fd(current_pos)[0]
-    # pos_list = ps.solve_w_ref_1(current_pos, soln_ref)
-    else:
+    if not(ps.does_all_pos_file_exist()):
         # file all_pos_13011.py does not exist
-        # MAYBE A PROMPT BEFORE TRYING TO CALCULATE STUFF FOR TWO HOURS!!!
         solving_text1.config(text="Reference file not found")
         show_generation_popup()
         return
-        # ps.generate_pos_files()
-        # pos_list = ps.solve_opt_w_fd(current_pos)[0]
+    # solver_output = ps.solve_opt_w_fd(current_pos)
+    # pos_list = ps.solve_opt_w_fd(current_pos)[0]
+    # pos_list = ps.solve_w_ref_1(current_pos, soln_ref)
+    pos_list = ps.solve_opt_w_fd(current_pos)[0]
+    solution_mode = True
+    solving_text1.config(text="Searching...")
+    index_opt = len(pos_log) - 1
     pos_log_opt = mv.combine_lists(pos_log, pos_list)
     move_log_opt = mv.move_list_from_pos_list(pos_log_opt)
     if index_opt > 0:
