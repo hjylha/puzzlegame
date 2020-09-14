@@ -39,37 +39,68 @@ class Positions:
                 piece_pos.append([y, 2-x])
         return Positions(self.stepnum, piece_pos)
 
+    def __eq__(self, other):
+        # equality ignores stepnum, but takes reflection into account
+        other_r = other.reflect()
+        continue_n = True
+        continue_r = True
+        i = 0
+        for num in piece_nums:
+            i0 = i
+            i1 = i0 + num
+            for j in range(num):
+                found_n = False
+                found_r = False
+                if self.pieces[i] in other.pieces[i0:i1] and continue_n:
+                    found_n = True
+                if self.pieces[i] in other_r.pieces[i0:i1] and continue_r:
+                    found_r = True
+                # if we found corresponding piece locations, we continue checking
+                if found_n or found_r:
+                    i += 1
+                # otherwise pos1 != pos2
+                else:
+                    return False
+                # if we didn't find corresponding piece location, we don't continue
+                if not(found_n):
+                    continue_n = False
+                if not(found_r):
+                    continue_r = False
+                if not(continue_n) and not(continue_r):
+                    return False
+        return True
 
-def are_pos_same(pos1, pos2):
-    pos2r = pos2.reflect()
-    # checking both pos2 and pos2 reflected
-    continue_n = True
-    continue_r = True
-    i = 0
-    for num in piece_nums:
-        i0 = i
-        i1 = i0 + num
-        for j in range(num):
-            found_n = False
-            found_r = False
-            if pos1.pieces[i] in pos2.pieces[i0:i1] and continue_n:
-                found_n = True
-            if pos1.pieces[i] in pos2r.pieces[i0:i1] and continue_r:
-                found_r = True
-            # if we found corresponding piece locations, we continue checking
-            if found_n or found_r:
-                i += 1
-            # otherwise pos1 != pos2
-            else:
-                return False
-            # if we didn't find corresponding piece location, we don't continue
-            if not(found_n):
-                continue_n = False
-            if not(found_r):
-                continue_r = False
-            if not(continue_n) and not(continue_r):
-                return False
-    return True
+
+# def are_pos_same(pos1, pos2):
+#     pos2r = pos2.reflect()
+#     # checking both pos2 and pos2 reflected
+#     continue_n = True
+#     continue_r = True
+#     i = 0
+#     for num in piece_nums:
+#         i0 = i
+#         i1 = i0 + num
+#         for j in range(num):
+#             found_n = False
+#             found_r = False
+#             if pos1.pieces[i] in pos2.pieces[i0:i1] and continue_n:
+#                 found_n = True
+#             if pos1.pieces[i] in pos2r.pieces[i0:i1] and continue_r:
+#                 found_r = True
+#             # if we found corresponding piece locations, we continue checking
+#             if found_n or found_r:
+#                 i += 1
+#             # otherwise pos1 != pos2
+#             else:
+#                 return False
+#             # if we didn't find corresponding piece location, we don't continue
+#             if not(found_n):
+#                 continue_n = False
+#             if not(found_r):
+#                 continue_r = False
+#             if not(continue_n) and not(continue_r):
+#                 return False
+#     return True
 
 
 # find the pos with the given stepnum from a pos_list
@@ -80,13 +111,13 @@ def pos_with_stepnum(num, pos_list):
             pos_list_s.append(pos)
     return pos_list_s
 
-
-def index_of_pos_in_list(pos, pos_list):
-    for i in range(len(pos_list)):
-        if are_pos_same(pos, pos_list[i]):
-            return i
-    # if pos is not in pos_list return -1
-    return -1
+# This should just be pos_list.index(pos)
+# def index_of_pos_in_list(pos, pos_list):
+#     for i in range(len(pos_list)):
+#         if are_pos_same(pos, pos_list[i]):
+#             return i
+#     # if pos is not in pos_list return -1
+#     return -1
 
 
 def write_pos_list_to_file(pos_list, filename):

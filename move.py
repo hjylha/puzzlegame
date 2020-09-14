@@ -1,5 +1,5 @@
 from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, all_pieces, piece_num, empty_num, initial_positions
-from positions import Positions, are_pos_same
+from positions import Positions
 # import math
 
 # probably needlessly complicated, let's just use numbers to represent moves
@@ -129,7 +129,7 @@ def fix_pos_list(pos_list):
         for move in range(piece_num * 4):
             if move_ok(move, pos_list[i-1]):
                 possible_pos = make_move(move, pos_list[i-1])
-                if are_pos_same(pos_list[i], possible_pos):
+                if pos_list[i] == possible_pos:
                     pos_list[i] = possible_pos
                     moved = True
         if not(moved):

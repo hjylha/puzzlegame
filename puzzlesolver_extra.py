@@ -1,16 +1,16 @@
 from puzzlegame_setup import piece_num
 from move import move_ok, make_move, combine_lists
-from positions import index_of_pos_in_list, pos_with_stepnum, write_pos_list_to_file
+from positions import pos_with_stepnum, write_pos_list_to_file
+import puzzlesolver as ps
 
 # Find a shortest path solution
 def solve_opt_from_scratch(pos):
-    from generate_positions import find_end_positions as find_end_positions
-    from generate_positions import distance_to_pos_list as distance_to_pos_list
-    end_pos = find_end_positions(pos)
+    end_pos = ps.find_end_positions(pos)
     print(len(end_pos), "end positions found")
-    all_pos = distance_to_pos_list(end_pos)
+    all_pos = ps.distance_to_pos_list(end_pos)
     print(len(all_pos), "positions in total")
-    i_0 = index_of_pos_in_list(pos, all_pos)
+    # i_0 = index_of_pos_in_list(pos, all_pos)
+    i_0 = all_pos.index(pos)
     dist_to_end = all_pos[i_0].stepnum
     if dist_to_end == 0:
         return [pos]
@@ -23,7 +23,8 @@ def solve_opt_from_scratch(pos):
         for move in range(piece_num * 4):
             if move_ok(move, pos_list[i]):
                 next_pos = make_move(move, pos_list[i])
-                if index_of_pos_in_list(next_pos, test_pos[dist_to_end-i-1]) > -1:
+                # if index_of_pos_in_list(next_pos, test_pos[dist_to_end-i-1]) > -1:
+                if next_pos in test_pos[dist_to_end-i-1]:
                     pos_list.append(next_pos)
                     break
     print("Optimal solution found")
@@ -49,7 +50,8 @@ def choose_every_kth_stepnum(k):
 
 # try to reach pos_list with k+ steps
 def reach_pos_list_opt(pos, pos_list_ref, k = 1):
-    if index_of_pos_in_list(pos, pos_list_ref) > -1:
+    # if index_of_pos_in_list(pos, pos_list_ref) > -1:
+    if pos in pos_list_ref:
         return [pos]
     att_pos = [pos]
     active_pos_lists = [[pos]]
@@ -60,9 +62,11 @@ def reach_pos_list_opt(pos, pos_list_ref, k = 1):
             for move in range(piece_num * 4):
                 if move_ok(move, curr_pos):
                     next_pos = make_move(move, curr_pos)
-                    if index_of_pos_in_list(next_pos, att_pos) == -1:
+                    # if index_of_pos_in_list(next_pos, att_pos) == -1:
+                    if not(next_pos in att_pos):
                         if len(pos_list) >= k:
-                            if index_of_pos_in_list(next_pos, pos_list_ref) > -1:
+                            # if index_of_pos_in_list(next_pos, pos_list_ref) > -1:
+                            if next_pos in pos_list_ref:
                                 pos_list.append(next_pos)
                                 return pos_list
                         att_pos.append(next_pos)
@@ -76,14 +80,17 @@ def solve_opt_w_10d(pos):
         return [pos]
     import every_10th_pos_1726
     ae_pos = every_10th_pos_1726.pos_list
-    if index_of_pos_in_list(pos, ae_pos) > -1:
-        dist_to_end = ae_pos[index_of_pos_in_list(pos, ae_pos)].stepnum
+    # if index_of_pos_in_list(pos, ae_pos) > -1:
+    if pos in ae_pos:
+        # dist_to_end = ae_pos[index_of_pos_in_list(pos, ae_pos)].stepnum
+        dist_to_end = ae_pos[ae_pos.index(pos)].stepnum
         # know_dist_to_end = True
     else:
         pos_list0 = reach_pos_list_opt(pos, ae_pos)
         if pos_list0[-1].pieces[-1] == [3,1]:
             return pos_list0
-        dist_to_end = ae_pos[index_of_pos_in_list(pos_list0[-1], ae_pos)].stepnum
+        # dist_to_end = ae_pos[index_of_pos_in_list(pos_list0[-1], ae_pos)].stepnum
+        dist_to_end = ae_pos[ae_pos.index(pos_list0[-1])].stepnum
         # know_dist_to_end = False
     test_pos = []
     for i in range((dist_to_end - 1) // 10 + 1 ):
@@ -106,14 +113,17 @@ def solve_opt_w_5d(pos):
         return [pos]
     import every_5th_pos_2965
     ae_pos = every_5th_pos_2965.pos_list
-    if index_of_pos_in_list(pos, ae_pos) > -1:
-        dist_to_end = ae_pos[index_of_pos_in_list(pos, ae_pos)].stepnum
+    # if index_of_pos_in_list(pos, ae_pos) > -1:
+    if pos in ae_pos:
+        # dist_to_end = ae_pos[index_of_pos_in_list(pos, ae_pos)].stepnum
+        dist_to_end = ae_pos[ae_pos.index(pos)].stepnum
         # know_dist_to_end = True
     else:
         pos_list0 = reach_pos_list_opt(pos, ae_pos)
         if pos_list0[-1].pieces[-1] == [3,1]:
             return pos_list0
-        dist_to_end = ae_pos[index_of_pos_in_list(pos_list0[-1], ae_pos)].stepnum
+        # dist_to_end = ae_pos[index_of_pos_in_list(pos_list0[-1], ae_pos)].stepnum
+        dist_to_end = ae_pos[ae_pos.index(pos_list0[-1])].stepnum
         # know_dist_to_end = False
     test_pos = []
     for i in range((dist_to_end - 1) // 5 + 1 ):
@@ -141,7 +151,8 @@ def solve0(starting_positions):
             if move_ok(move, curr_pos):
                 next_pos = make_move(move, curr_pos)
                 # check if we have been here before: if not, it is a good move
-                if index_of_pos_in_list(next_pos, att_list) == -1:
+                # if index_of_pos_in_list(next_pos, att_list) == -1:
+                if next_pos in att_list:
                     pos_list.append(next_pos)
                     att_list.append(next_pos)
                     moved = True
@@ -169,8 +180,10 @@ def solve_w_history0(pos_list, reference_solution):
 
 
 def solve_w_ref_1(starting_positions, reference_solution):
-    if not (index_of_pos_in_list(starting_positions, reference_solution) == -1):
-        i_r = index_of_pos_in_list(starting_positions, reference_solution)
+    # if not (index_of_pos_in_list(starting_positions, reference_solution) == -1):
+    if starting_positions in reference_solution:
+        # i_r = index_of_pos_in_list(starting_positions, reference_solution)
+        i_r = reference_solution.index(starting_positions)
         return combine_lists([starting_positions], reference_solution[i_r:])
     all_att = [starting_positions]
     num_of_moves = 1
@@ -187,14 +200,18 @@ def solve_w_ref_1(starting_positions, reference_solution):
             for move in range(piece_num * 4):
                 if move_ok(move, curr_pos):
                     next_pos = make_move(move, curr_pos)
-                    if index_of_pos_in_list(next_pos, att_list) == -1:
-                        i_a = index_of_pos_in_list(next_pos, all_att)
+                    # if index_of_pos_in_list(next_pos, att_list) == -1:
+                    if not(next_pos in att_list):
+                        # i_a = index_of_pos_in_list(next_pos, all_att)
+                        i_a = all_att.index(next_pos)
                         if i_a == -1:
                             pos_list.append(next_pos)
                             if next_pos.pieces[-1] == [3,1]:
                                 return pos_list
-                            if not(index_of_pos_in_list(next_pos, reference_solution) == -1):
-                                i_r = index_of_pos_in_list(next_pos, reference_solution)
+                            # if not(index_of_pos_in_list(next_pos, reference_solution) == -1):
+                            if next_pos in reference_solution:
+                                # i_r = index_of_pos_in_list(next_pos, reference_solution)
+                                i_r = reference_solution.index(next_pos)
                                 return combine_lists(pos_list, reference_solution[i_r:])
                             att_list.append(next_pos)
                             all_att.append(next_pos)
@@ -234,7 +251,8 @@ def solve_opt_0(starting_positions):
                 if move_ok(move, curr_pos):
                     #print(num_of_moves, i_p, m[0], m[1], m[2], " FOUND A POSSIBLE MOVE!")
                     next_pos = make_move(move, curr_pos)
-                    if index_of_pos_in_list(next_pos, all_att) == -1:
+                    # if index_of_pos_in_list(next_pos, all_att) == -1:
+                    if not(next_pos in all_att):
                         # if this pos hasn't been reached, go forward
                         #print(num_of_moves, i_p, m[0], m[1], m[2], " BRAND NEW POS FOUND, MOVING FORWARD!")
                         all_att.append(next_pos)
@@ -247,7 +265,8 @@ def solve_opt_0(starting_positions):
                     else:
                         # has this pos been reached more optimally before?
                         # yes, pretty much by definition
-                        i_a = index_of_pos_in_list(next_pos, all_att)
+                        # i_a = index_of_pos_in_list(next_pos, all_att)
+                        i_a = all_att.index(next_pos)
                         if next_pos.stepnum < all_att[i_a].stepnum:
                             #print(num_of_moves, i_p, m[0], m[1], m[2], " MORE OPTIMAL WAY TO REACH OLD POS FOUND!")
                             all_att[i_a].stepnum = next_pos.stepnum
@@ -279,7 +298,8 @@ def distance_to_solution():
             for move in range(piece_num * 4):
                 if move_ok(move, pos):
                     next_pos = make_move(move, pos)
-                    if index_of_pos_in_list(next_pos, pos_reached) == -1:
+                    # if index_of_pos_in_list(next_pos, pos_reached) == -1:
+                    if not(next_pos in pos_reached):
                         pos_reached.append(next_pos)
                         updated_active_pos.append(next_pos)
                         if next_pos.pieces[-1] == [3,1]:
@@ -307,7 +327,8 @@ def distance_to_end():
             for move in range(piece_num * 4):
                 if move_ok(move, pos):
                     next_pos = make_move(move, pos)
-                    if index_of_pos_in_list(next_pos, reached_pos) == -1:
+                    # if index_of_pos_in_list(next_pos, reached_pos) == -1:
+                    if not(next_pos in reached_pos):
                         reached_pos.append(next_pos)
                         updated_active_pos.append(next_pos)
         active_pos = updated_active_pos.copy()

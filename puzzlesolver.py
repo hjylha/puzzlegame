@@ -1,5 +1,6 @@
 from puzzlegame_setup import piece_num, initial_positions
-from positions import Positions, index_of_pos_in_list, pos_with_stepnum, write_pos_list_to_file
+from positions import Positions, pos_with_stepnum, write_pos_list_to_file
+# from positions import index_of_pos_in_list
 from move import move_ok, make_move
 
 ''' 
@@ -26,7 +27,8 @@ def solve_opt_w_fd(pos):
         return [[pos], False]
     import all_pos_13011
     all_pos = all_pos_13011.pos_list
-    i_0 = index_of_pos_in_list(pos, all_pos)
+    # i_0 = index_of_pos_in_list(pos, all_pos)
+    i_0 = all_pos.index(pos)
     dist_to_end = all_pos[i_0].stepnum
     if dist_to_end == 0:
         return [[pos], True]
@@ -39,7 +41,8 @@ def solve_opt_w_fd(pos):
         for move in range(piece_num * 4):
             if move_ok(move, pos_list[i]):
                 next_pos = make_move(move, pos_list[i])
-                if index_of_pos_in_list(next_pos, test_pos[dist_to_end-i-1]) > -1:
+                # if index_of_pos_in_list(next_pos, test_pos[dist_to_end-i-1]) > -1:
+                if next_pos in test_pos[dist_to_end-i-1]:
                     pos_list.append(next_pos)
                     break
     return [pos_list, True]
@@ -56,7 +59,8 @@ def find_end_positions(starting_positions):
             for move in range(piece_num * 4):
                 if move_ok(move, pos):
                     next_pos = make_move(move, pos)
-                    if index_of_pos_in_list(next_pos, all_pos) == -1:
+                    # if index_of_pos_in_list(next_pos, all_pos) == -1:
+                    if not(next_pos in all_pos):
                         all_pos.append(next_pos)
                         updated_active_pos.append(next_pos)
                         if next_pos.pieces[-1] == [3,1]:
@@ -77,7 +81,8 @@ def distance_to_pos_list(pos_list):
             for move in range(piece_num * 4):
                 if move_ok(move, pos):
                     next_pos = make_move(move, pos)
-                    if index_of_pos_in_list(next_pos, reached_pos) == -1:
+                    # if index_of_pos_in_list(next_pos, reached_pos) == -1:
+                    if not(next_pos in reached_pos):
                         reached_pos.append(next_pos)
                         updated_active_pos.append(next_pos)
         active_pos = updated_active_pos.copy()

@@ -49,6 +49,8 @@ def show_generation_popup():
     explanation = "The file all_pos_13011.py was not found. It is needed for finding optimal solutions fast. Do you want to generate this file now? The process may take a couple of hours."
     start_generating = messagebox.askyesno("Generating positions", explanation)
     if(start_generating):
+        solving_text1.config(text="Generating files, please wait")
+        print("Generating files...")
         ps.generate_pos_files()
         solving_text1.config(text="File generated")
 
