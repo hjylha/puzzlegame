@@ -177,7 +177,7 @@ def solution_from_start():
     restart()
     solution_mode = True
     index_opt = 0
-    pos_log_opt = solution_opt_117.solution_117
+    pos_log_opt = solution_opt_117.pos_list
     move_log_opt = mv.move_list_from_pos_list(pos_log_opt)
     solution_fwd.config(state=tk.NORMAL)
     statustexts[1].config(text=str(index_opt + 1) + " / " + str(len(pos_log_opt)))

@@ -13,10 +13,13 @@ def does_all_pos_file_exist():
     try:
         import all_pos_13011
         # check that the file contains all positions
-        all_pos = all_pos_13011.pos_list
-        if len(all_pos) != 13011:
+        try:
+            all_pos = all_pos_13011.pos_list
+            if len(all_pos) != 13011:
+                return False
+            return True
+        except AttributeError:
             return False
-        return True
     except ModuleNotFoundError:
         return False
 
@@ -24,11 +27,17 @@ def does_all_pos_file_exist():
 def does_soln_117_file_exist():
     try:
         import solution_opt_117
-        soln = solution_opt_117.solution_117
-        if len(soln) != 117:
+        try:
+            soln = solution_opt_117.pos_list
+            if len(soln) != 117:
+                print("wrong length")
+                return False
+        except AttributeError:
+            print("bad content")
             return False
         return True
     except ModuleNotFoundError:
+        print("file not found")
         return False
 
 # then we can just solve the problem
