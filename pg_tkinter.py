@@ -19,6 +19,9 @@ sideframe.grid(row=0, column=1, rowspan=2, sticky=tk.N+tk.S)
 # active global variables
 active_piece = -1
 highlighted = False
+mb1_pressed = False
+# highlighted_sortof = False
+active_piece_sortof = -1
 current_pos = Positions(0, initial_positions)
 pos_log = [Positions(0, initial_positions)]
 move_log = []
@@ -75,13 +78,17 @@ def show_generation_popup2():
                 solving_text1.config(text="Solution found")
                 solution_from_start()
 
+def deactivate():
+    global active_piece, highlighted
+    if highlighted:
+        pieces[active_piece].config(relief=tk.RAISED)
+    highlighted = False
+    active_piece = -1
+
 def restart():
     global active_piece, highlighted, current_pos, pos_log, move_log, solution_mode
     solution_mode = False
-    if highlighted:
-        highlighted = False
-        pieces[active_piece].config(relief=tk.RAISED)
-    active_piece = -1
+    deactivate()
     current_pos = Positions(0, initial_positions)
     pos_log = [Positions(0, initial_positions)]
     move_log = []
@@ -97,10 +104,7 @@ def restart():
 def undo():
     # what if we are in solution mode??
     global active_piece, highlighted, current_pos, pos_log, move_log, index_opt
-    if highlighted:
-        highlighted = False
-        pieces[active_piece].config(relief=tk.RAISED)
-    active_piece = -1
+    deactivate()
     pos_log.pop()
     move_log.pop()
     current_pos = pos_log[-1]
@@ -121,9 +125,7 @@ def pressed(piece_id):
     # is a piece highlighted already, and is it the one we clicked??
     if highlighted and active_piece == piece_id:
         # if we clicked the active piece, it deactivates
-        highlighted = False
-        active_piece = -1
-        pieces[piece_id].config(relief=tk.RAISED)
+        deactivate()
         statustexts[0].config(text="                              ")
     elif highlighted:
         # switch active piece
@@ -213,9 +215,7 @@ def solution_from_pos():
 def soln_back():
     global highlighted, active_piece, current_pos, pos_log, move_log, index_opt
     if highlighted:
-        highlighted = False
-        pieces[active_piece].config(relief=tk.RAISED)
-        active_piece = -1
+        deactivate()
     pos_log.pop()
     move_log.pop()
     statustexts[0].config(text="Going back")
@@ -233,9 +233,7 @@ def soln_back():
 def soln_fwd():
     global highlighted, active_piece, current_pos, pos_log, move_log, index_opt
     if highlighted:
-        highlighted = False
-        pieces[active_piece].config(relief=tk.RAISED)
-        active_piece = -1
+        deactivate()
     if move_log == []:
         undo_button.config(state=tk.NORMAL)
     move = move_log_opt[index_opt]
@@ -263,6 +261,10 @@ def b_d(piece_id):
         return [25,6]
     if all_pieces[piece_id][0] == 2 and all_pieces[piece_id][1] == 2:
         return [25,13]
+
+# (approx) width and height of buttons (in pixels)
+button_width = 95
+button_height = 100
 
 pieces = []
 k = 0
@@ -365,27 +367,93 @@ def try_move_direction(num):
         else:
             statustexts[0].config(text=piece_symbols[active_piece] + " cannot move " + directions[num])
 
-
 def try_left(event):
     try_move_direction(0)
-
 
 def try_right(event):
     try_move_direction(1)
 
-
 def try_up(event):
     try_move_direction(2)
-
 
 def try_down(event):
     try_move_direction(3)
 
+# moving pieces while holding mouse button 1
+def try_to_move_piece(event):
+    global highlighted, active_piece, active_piece_sortof
+    mb1_x_curr = event.x
+    mb1_y_curr = event.y
+    curr_piece = event.widget
+    # solving_text1.config(text=str(mb1_x_curr) + ", " + str(mb1_y_curr))
+    if curr_piece == pieces[active_piece_sortof]:
+        # solving_text2.config(text=str(active_piece_sortof))
+        if mb1_x_curr < 1:
+            deactivate()
+            highlighted = True
+            active_piece = active_piece_sortof
+            # try to go left
+            try_move_direction(0)
+            highlighted = False
+        elif mb1_y_curr < 1:
+            deactivate()
+            highlighted = True
+            active_piece = active_piece_sortof
+            # try to go up
+            try_move_direction(2)
+            highlighted = False
+        elif mb1_x_curr > button_width and active_piece_sortof in [0, 1, 2, 3, 4, 5, 6, 7]:
+            deactivate()
+            highlighted = True
+            active_piece = active_piece_sortof
+            # try to go right
+            try_move_direction(1)
+            highlighted = False
+        elif mb1_x_curr > 2 * button_width and active_piece_sortof in [8, 9]:
+            deactivate()
+            highlighted = True
+            active_piece = active_piece_sortof
+            # try to go right
+            try_move_direction(1)
+            highlighted = False
+        elif mb1_y_curr > button_height and active_piece_sortof in [0, 1, 2, 3, 8]:
+            deactivate()
+            highlighted = True
+            active_piece = active_piece_sortof
+            # try to go down
+            try_move_direction(3)
+            highlighted = False
+        elif mb1_y_curr > 2 * button_height and active_piece_sortof in [4, 5, 6, 7, 9]:
+            deactivate()
+            highlighted = True
+            active_piece = active_piece_sortof
+            # try to go down
+            try_move_direction(3)
+            highlighted = False
+            
+
+def mb1_down(event):
+    global mb1_pressed, active_piece_sortof
+    mb1_pressed = True
+    # mb1_x_start = event.x
+    # mb1_y_start = event.y
+    curr_piece = event.widget
+    if curr_piece in pieces:
+        active_piece_sortof = pieces.index(curr_piece)
+        # print(curr_piece.geometry())
+
+def mb1_up(event):
+    global mb1_pressed
+    mb1_pressed = False
 
 main_window.bind("<Left>", try_left)
 main_window.bind("<Right>", try_right)
 main_window.bind("<Up>", try_up)
 main_window.bind("<Down>", try_down)
+
+main_window.bind("<Button-1>", mb1_down)
+main_window.bind("<ButtonRelease-1>", mb1_up)
+main_window.bind("<B1-Motion>", try_to_move_piece)
 
 
 main_window.mainloop()
