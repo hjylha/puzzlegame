@@ -9,13 +9,13 @@ class Positions:
         #self.empties = self.set_empties()
 
     def pieces_cover(self):
-        cover = []
+        cover = set()
         for j in range(piece_num):
             y0 = self.pieces[j][0]
             x0 = self.pieces[j][1]
             for y in range(all_pieces[j][0]):
                 for x in range(all_pieces[j][1]):
-                    cover.append([y0 + y, x0 + x])
+                    cover.add((y0 + y, x0 + x))
         return cover
 
     def set_empties(self):
@@ -34,10 +34,10 @@ class Positions:
             y = self.pieces[j][0]
             x = self.pieces[j][1]
             if all_pieces[j][1] == 1:
-                piece_pos.append([y, 3-x])
+                piece_pos.append((y, 3-x))
             if all_pieces[j][1] == 2:
-                piece_pos.append([y, 2-x])
-        return Positions(self.stepnum, piece_pos)
+                piece_pos.append((y, 2-x))
+        return Positions(self.stepnum, tuple(piece_pos))
 
     def __eq__(self, other):
         # equality ignores stepnum, but takes reflection into account
@@ -70,56 +70,16 @@ class Positions:
                     return False
         return True
 
-
-# def are_pos_same(pos1, pos2):
-#     pos2r = pos2.reflect()
-#     # checking both pos2 and pos2 reflected
-#     continue_n = True
-#     continue_r = True
-#     i = 0
-#     for num in piece_nums:
-#         i0 = i
-#         i1 = i0 + num
-#         for j in range(num):
-#             found_n = False
-#             found_r = False
-#             if pos1.pieces[i] in pos2.pieces[i0:i1] and continue_n:
-#                 found_n = True
-#             if pos1.pieces[i] in pos2r.pieces[i0:i1] and continue_r:
-#                 found_r = True
-#             # if we found corresponding piece locations, we continue checking
-#             if found_n or found_r:
-#                 i += 1
-#             # otherwise pos1 != pos2
-#             else:
-#                 return False
-#             # if we didn't find corresponding piece location, we don't continue
-#             if not(found_n):
-#                 continue_n = False
-#             if not(found_r):
-#                 continue_r = False
-#             if not(continue_n) and not(continue_r):
-#                 return False
-#     return True
-
-
 # find the pos with the given stepnum from a pos_list
+# list or set?
 def pos_with_stepnum(num, pos_list):
-    pos_list_s = []
+    pos_list_s = set()
     for pos in pos_list:
         if pos.stepnum == num:
-            pos_list_s.append(pos)
+            pos_list_s.add(pos)
     return pos_list_s
 
-# This should just be pos_list.index(pos)
-# def index_of_pos_in_list(pos, pos_list):
-#     for i in range(len(pos_list)):
-#         if are_pos_same(pos, pos_list[i]):
-#             return i
-#     # if pos is not in pos_list return -1
-#     return -1
-
-
+# functions for saving positions to file
 def write_pos_list_to_file(pos_list, filename):
     l = len(pos_list)
     name = filename + "_" + str(l) + ".py"
@@ -129,4 +89,15 @@ def write_pos_list_to_file(pos_list, filename):
     for i in range(l):
         file.write("pos_list.append(Positions(" + str(pos_list[i].stepnum))
         file.write(", " + str(pos_list[i].pieces) + "))\n")
+    file.close()
+
+def write_pos_set_to_file(pos_set, filename):
+    l = len(pos_set)
+    name = filename + "_" + str(l) + ".py"
+    file = open(name, "w")
+    file.write("from positions import Positions\n\n")
+    file.write("pos_set = set()\n")
+    for pos in pos_set:
+        file.write("pos_set.add(Positions(" + str(pos.stepnum))
+        file.write(", " + str(pos.pieces) + "))\n")
     file.close()

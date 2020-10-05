@@ -1,6 +1,5 @@
 from puzzlegame_setup import piece_num, initial_positions
 from positions import Positions, pos_with_stepnum, write_pos_list_to_file
-# from positions import index_of_pos_in_list
 from move import move_ok, make_move, fix_pos_list
 
 ''' 
@@ -30,14 +29,14 @@ def does_soln_117_file_exist():
         try:
             soln = solution_opt_117.pos_list
             if len(soln) != 117:
-                print("wrong length")
+                # print("wrong length")
                 return False
         except AttributeError:
-            print("bad content")
+            # print("bad content")
             return False
         return True
     except ModuleNotFoundError:
-        print("file not found")
+        # print("file not found")
         return False
 
 # then we can just solve the problem
@@ -47,7 +46,6 @@ def solve_opt_w_fd(pos):
         return [[pos], False]
     import all_pos_13011
     all_pos = all_pos_13011.pos_list
-    # i_0 = index_of_pos_in_list(pos, all_pos)
     i_0 = all_pos.index(pos)
     dist_to_end = all_pos[i_0].stepnum
     if dist_to_end == 0:
@@ -61,7 +59,6 @@ def solve_opt_w_fd(pos):
         for move in range(piece_num * 4):
             if move_ok(move, pos_list[i]):
                 next_pos = make_move(move, pos_list[i])
-                # if index_of_pos_in_list(next_pos, test_pos[dist_to_end-i-1]) > -1:
                 if next_pos in test_pos[dist_to_end-i-1]:
                     pos_list.append(next_pos)
                     break
