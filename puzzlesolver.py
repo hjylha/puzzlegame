@@ -76,14 +76,12 @@ def find_end_positions(starting_positions):
             for move in range(piece_num * 4):
                 if move_ok(move, pos):
                     next_pos = make_move(move, pos)
-                    # if index_of_pos_in_list(next_pos, all_pos) == -1:
                     if not(next_pos in all_pos):
                         all_pos.append(next_pos)
                         updated_active_pos.append(next_pos)
-                        if next_pos.pieces[-1] == [3,1]:
+                        if next_pos.pieces[-1] == (3,1):
                             end_pos.append(next_pos)
         active_pos = updated_active_pos.copy()
-    # print(len(end_pos), "end positions found")
     return end_pos
 
 # find all positions and calculate their distance (stepnum) from a given pos_list
@@ -98,17 +96,15 @@ def distance_to_pos_list(pos_list):
             for move in range(piece_num * 4):
                 if move_ok(move, pos):
                     next_pos = make_move(move, pos)
-                    # if index_of_pos_in_list(next_pos, reached_pos) == -1:
                     if not(next_pos in reached_pos):
                         reached_pos.append(next_pos)
                         updated_active_pos.append(next_pos)
         active_pos = updated_active_pos.copy()
-    # print(len(reached_pos), "positions with distances found")
     return reached_pos
 
 def generate_pos_files():
     # generate end positions and write them to file "end_positions_484.py"
-    end_positions = find_end_positions(Positions(0, initial_positions))
+    end_positions = find_end_positions(Positions())
     write_pos_list_to_file(end_positions, "end_positions")
     filename1 = "end_positions_" + str(len(end_positions)) + ".py"
     print(len(end_positions), "end positions found and written to file " + filename1)
@@ -135,7 +131,7 @@ def find_opt_soln(starting_pos):
                     # if next_pos has not been visited
                     if not(next_pos in all_att):
                         all_att.append(next_pos)
-                        if next_pos.pieces[-1] == [3,1]:
+                        if next_pos.pieces[-1] == (3,1):
                             num_of_steps = next_pos.stepnum
                             print(num_of_steps, "steps in solution")
                             soln_opt.append(next_pos)

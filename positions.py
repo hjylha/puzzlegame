@@ -9,14 +9,14 @@ class Positions:
         #self.empties = self.set_empties()
 
     def pieces_cover(self):
-        cover = set()
+        cover = []
         for j in range(piece_num):
             y0 = self.pieces[j][0]
             x0 = self.pieces[j][1]
             for y in range(all_pieces[j][0]):
                 for x in range(all_pieces[j][1]):
-                    cover.add((y0 + y, x0 + x))
-        return cover
+                    cover.append((y0 + y, x0 + x))
+        return tuple(cover)
 
     def set_empties(self):
         empties = []
@@ -71,12 +71,12 @@ class Positions:
         return True
 
 # find the pos with the given stepnum from a pos_list
-# list or set?
+# list or set? does it matter?
 def pos_with_stepnum(num, pos_list):
-    pos_list_s = set()
+    pos_list_s = []
     for pos in pos_list:
         if pos.stepnum == num:
-            pos_list_s.add(pos)
+            pos_list_s.append(pos)
     return pos_list_s
 
 # functions for saving positions to file
@@ -91,13 +91,14 @@ def write_pos_list_to_file(pos_list, filename):
         file.write(", " + str(pos_list[i].pieces) + "))\n")
     file.close()
 
-def write_pos_set_to_file(pos_set, filename):
-    l = len(pos_set)
-    name = filename + "_" + str(l) + ".py"
-    file = open(name, "w")
-    file.write("from positions import Positions\n\n")
-    file.write("pos_set = set()\n")
-    for pos in pos_set:
-        file.write("pos_set.add(Positions(" + str(pos.stepnum))
-        file.write(", " + str(pos.pieces) + "))\n")
-    file.close()
+# not sure about this one
+# def write_pos_set_to_file(pos_set, filename):
+#     l = len(pos_set)
+#     name = filename + "_" + str(l) + ".py"
+#     file = open(name, "w")
+#     file.write("from positions import Positions\n\n")
+#     file.write("pos_set = set()\n")
+#     for pos in pos_set:
+#         file.write("pos_set.add(Positions(" + str(pos.stepnum))
+#         file.write(", " + str(pos.pieces) + "))\n")
+#     file.close()
