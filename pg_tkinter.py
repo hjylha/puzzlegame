@@ -44,8 +44,11 @@ def place_pieces(buttons, ebuttons, pos):
         ebuttons[i].grid(row=pos.set_empties()[i][0], column=pos.set_empties()[i][1])
 
 def is_solved(pos):
-    if pos.pieces[-1] == [3,1]:
+    if pos.solved():
+    # if pos.pieces[-1] == (3,1):
         solution_text.config(text="You have solved \n the puzzle!")
+    else:
+        solution_text.config(text="      ")
 
 def show_generation_popup():
     from tkinter import messagebox
@@ -118,6 +121,7 @@ def undo():
             solution_back.config(state=tk.DISABLED)
     if move_log == []:
         undo_button.config(state=tk.DISABLED)
+    is_solved(current_pos)
 
 
 def pressed(piece_id):
@@ -229,6 +233,7 @@ def soln_back():
     if index_opt == 0:
         solution_back.config(state=tk.DISABLED)
     statustexts[1].config(text=str(index_opt + 1) + " / " + str(len(pos_log_opt)))
+    is_solved(current_pos)
 
 def soln_fwd():
     global highlighted, active_piece, current_pos, pos_log, move_log, index_opt

@@ -127,5 +127,7 @@ def fix_pos_list(pos_list):
 # pos_list[-1] = pos_list2[0]
 # should this be checked here ???
 def combine_lists(pos_list1, pos_list2):
-    pos_list1.extend(pos_list2)
-    return fix_pos_list(pos_list1)
+    pos_list = pos_list2.copy()
+    pos_list.pop(0)
+    pos_list1.extend(pos_list)
+    return fix_pos_list(pos_list1.copy())

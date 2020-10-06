@@ -8,6 +8,11 @@ class Positions:
         self.pieces = pieces
         #self.empties = self.set_empties()
 
+    def solved(self):
+        if self.pieces[-1] == (3, 1):
+            return True
+        return False
+
     def pieces_cover(self):
         cover = []
         for j in range(piece_num):
