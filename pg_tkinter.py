@@ -102,6 +102,8 @@ def restart():
     solving_text2.config(text=" ")
     solution_text.config(text=" ")
     undo_button.config(state=tk.DISABLED)
+    solution_back.config(state=tk.DISABLED)
+    solution_fwd.config(state=tk.DISABLED)
 
 
 def undo():
@@ -119,6 +121,8 @@ def undo():
         statustexts[1].config(text=str(index_opt + 1) + " / " + str(len(pos_log_opt)))
         if index_opt == 0:
             solution_back.config(state=tk.DISABLED)
+        elif index_opt < len(move_log_opt):
+            solution_fwd.config(state=tk.NORMAL)
     if move_log == []:
         undo_button.config(state=tk.DISABLED)
     is_solved(current_pos)
