@@ -1,5 +1,5 @@
 from positions import Positions
-import move
+import move as mv
 
 class Puzzlegame:
 
@@ -33,8 +33,8 @@ class Puzzlegame:
         self.pos_log = [Positions().pieces]
         self.move_log = []
         self.solution_mode = False
-        self.pos_log_opt = []
-        self.move_log_opt = []
+        # self.pos_log_opt = []
+        # self.move_log_opt = []
 
     def set_active(self, piece_id):
         # should this check for valid piece_id?
@@ -53,8 +53,8 @@ class Puzzlegame:
 
     def make_move(self, move):
         pos = Positions(0, self.current_pos)
-        if move.move_ok(move, pos):
-            self.current_pos = move.make_move(move, pos).pieces
+        if mv.move_ok(move, pos):
+            self.current_pos = mv.make_move(move, pos).pieces
             self.move_log.append(move)
             self.pos_log.append(self.current_pos)
             return True
@@ -83,12 +83,16 @@ class Puzzlegame:
                 return False
             else:
                 self.current_pos = self.pos_log_opt[index_opt - 1]
+                self.pos_log.pop()
+                self.move_log.pop()
                 return True
         elif direction == 1:
             if index_opt == len(self.pos_log_opt) - 1:
                 return False
             else:
                 self.current_pos = self.pos_log_opt[index_opt + 1]
+                self.pos_log.append(self.current_pos)
+                self.move_log.append(self.move_log_opt[index_opt])
                 return True
 
     def show_solution(self):
@@ -96,7 +100,7 @@ class Puzzlegame:
         self.reset()
         self.solution_mode = True
         pos_log_opt = solution_opt_117.pos_list
-        self.move_log_opt = move.move_list_from_pos_list(pos_log_opt)
+        self.move_log_opt = mv.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda x: x.pieces, pos_log_opt))
 
     def find_solution(self):
@@ -104,8 +108,8 @@ class Puzzlegame:
         self.solution_mode = True
         pos = Positions(self.pos_log.index(self.current_pos), self.current_pos)
         # ROPLEMS maybe fixed
-        pos_log = [Positions(i, self.pos_log[i]) for i in len(self.pos_log)]
+        pos_log = [Positions(i, self.pos_log[i]) for i in range(len(self.pos_log))]
         pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
-        pos_log_opt = move.combine_lists(pos_log, pos_list)
-        self.move_log_opt = move.move_list_from_pos_list(pos_log_opt)
+        pos_log_opt = mv.combine_lists(pos_log, pos_list)
+        self.move_log_opt = mv.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda p: p.pieces, pos_log_opt))
