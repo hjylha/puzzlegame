@@ -46,6 +46,7 @@ class Positions:
 
     def __eq__(self, other):
         # equality ignores stepnum, but takes reflection into account
+        # maybe this is not the best way to do things??
         other_r = other.reflect()
         continue_n = True
         continue_r = True

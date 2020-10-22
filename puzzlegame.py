@@ -10,6 +10,7 @@ class Puzzlegame:
         # self.highlighted = False
         self.active_piece_for_dragging = -1
         # should this be the whole object or just the position tuple?
+        self.index_opt = 0
         self.current_pos = Positions().pieces
         self.pos_log = [Positions().pieces]
         self.move_log = []
@@ -29,6 +30,7 @@ class Puzzlegame:
     def reset(self):
         self.active_piece = -1
         self.active_piece_for_dragging = -1
+        self.index_opt = 0
         self.current_pos = Positions().pieces
         self.pos_log = [Positions().pieces]
         self.move_log = []
@@ -57,6 +59,9 @@ class Puzzlegame:
             self.current_pos = mv.make_move(move, pos).pieces
             self.move_log.append(move)
             self.pos_log.append(self.current_pos)
+            self.index_opt += 1
+            if not(self.current_pos == self.pos_log[self.index_opt]):
+                print("problems!!!!")
             return True
         else:
             return False
@@ -68,6 +73,9 @@ class Puzzlegame:
             self.move_log.pop()
             self.pos_log.pop()
             self.current_pos = self.pos_log[-1]
+            self.index_opt -= 1
+            if not(self.current_pos == self.pos_log[self.index_opt]):
+                print("problems!!!!")
             return True
 
     # 0 = left, 1 = right
@@ -77,22 +85,29 @@ class Puzzlegame:
         if not(self.current_pos in self.pos_log_opt):
             print("Something has gone terribly wrong")
             return False
-        index_opt = self.pos_log_opt.index(self.current_pos)
+        # going back
         if direction == 0:
-            if index_opt == 0:
+            if self.index_opt == 0:
                 return False
             else:
-                self.current_pos = self.pos_log_opt[index_opt - 1]
+                self.current_pos = self.pos_log_opt[self.index_opt - 1]
                 self.pos_log.pop()
                 self.move_log.pop()
+                self.index_opt -= 1
+                if not(self.current_pos == self.pos_log[self.index_opt]):
+                    print("problems!!!!")
                 return True
+        # going forward
         elif direction == 1:
-            if index_opt == len(self.pos_log_opt) - 1:
+            if self.index_opt == len(self.pos_log_opt) - 1:
                 return False
             else:
-                self.current_pos = self.pos_log_opt[index_opt + 1]
+                self.current_pos = self.pos_log_opt[self.index_opt + 1]
                 self.pos_log.append(self.current_pos)
-                self.move_log.append(self.move_log_opt[index_opt])
+                self.move_log.append(self.move_log_opt[self.index_opt])
+                self.index_opt += 1
+                if not(self.current_pos == self.pos_log[self.index_opt]):
+                    print("problems!!!!")
                 return True
 
     def show_solution(self):
@@ -106,10 +121,25 @@ class Puzzlegame:
     def find_solution(self):
         import puzzlesolver
         self.solution_mode = True
-        pos = Positions(self.pos_log.index(self.current_pos), self.current_pos)
+        pos = Positions(self.index_opt, self.current_pos)
         # ROPLEMS maybe fixed
         pos_log = [Positions(i, self.pos_log[i]) for i in range(len(self.pos_log))]
         pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
         pos_log_opt = mv.combine_lists(pos_log, pos_list)
         self.move_log_opt = mv.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda p: p.pieces, pos_log_opt))
+        if self.current_pos != self.pos_log_opt[self.index_opt]:
+            print(" big problems!!!!!!!!!!!!!!!!")
+            # mirror images!!
+            print(self.current_pos)
+            print(self.pos_log_opt[self.index_opt])
+            print(Positions(0, self.current_pos) == Positions(0, self.pos_log_opt[self.index_opt]))
+            # print("edelliset")
+            print(pos_log[self.index_opt].pieces)
+            print(pos_log_opt[self.index_opt].pieces)
+            for i in range(len(self.pos_log)):
+                if self.pos_log[i] != self.pos_log_opt[i]:
+                    print("differences spotted!!!")
+                    print(i)
+                    print(self.pos_log[i])
+                    print(self.pos_log_opt[i])

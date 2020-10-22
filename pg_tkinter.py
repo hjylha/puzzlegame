@@ -103,11 +103,11 @@ def play_puzzlegame():
         statustexts[0].config(text="Previous move undone")
         is_solved()
         if puzzlegame.solution_mode:
-            index_opt = len(puzzlegame.move_log)
-            statustexts[1].config(text=str(index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
-            if index_opt == 0:
+            # index_opt = len(puzzlegame.move_log)
+            statustexts[1].config(text=str(puzzlegame.index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
+            if puzzlegame.index_opt == 0:
                 solution_back.config(state=tk.DISABLED)
-            elif index_opt < len(puzzlegame.move_log_opt):
+            elif puzzlegame.index_opt < len(puzzlegame.move_log_opt):
                 solution_fwd.config(state=tk.NORMAL)
         if puzzlegame.move_log == []:
             undo_button.config(state=tk.DISABLED)
@@ -164,7 +164,7 @@ def play_puzzlegame():
             solving_text1.config(text="Solution file not found")
             show_generation_popup2()
             return
-        deactivate()
+        restart()
         puzzlegame.show_solution()
         solution_fwd.config(state=tk.NORMAL)
         statustexts[1].config(text=str(1) + " / " + str(len(puzzlegame.pos_log_opt)))
@@ -178,13 +178,13 @@ def play_puzzlegame():
             show_generation_popup()
             return
         puzzlegame.find_solution()
-        index_opt = len(puzzlegame.move_log)
-        if index_opt > 0:
+        # index_opt = len(puzzlegame.move_log)
+        if puzzlegame.index_opt > 0:
             solution_back.config(state=tk.NORMAL)
-        if index_opt < len(puzzlegame.pos_log_opt) - 1:
+        if puzzlegame.index_opt < len(puzzlegame.pos_log_opt) - 1:
             solution_fwd.config(state=tk.NORMAL)
         solving_text1.config(text="Solution found!")
-        statustexts[1].config(text=str(index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
+        statustexts[1].config(text=str(puzzlegame.index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
         solving_text2.config(text="Use the '<<' \n and '>>' buttons \n to cycle through \n the solution")
 
 
@@ -193,31 +193,30 @@ def play_puzzlegame():
             deactivate()
         statustexts[0].config(text="Going back")
         puzzlegame.cycle_solution(0)
-        index_opt = len(puzzlegame.move_log)
+        # index_opt = len(puzzlegame.move_log)
         place_pieces(pieces, empties)
         if puzzlegame.move_log == []:
             undo_button.config(state=tk.DISABLED)
-        if index_opt < len(puzzlegame.move_log_opt):
+        if puzzlegame.index_opt < len(puzzlegame.move_log_opt):
             solution_fwd.config(state=tk.NORMAL)
-        if index_opt == 0:
+        if puzzlegame.index_opt == 0:
             solution_back.config(state=tk.DISABLED)
-        statustexts[1].config(text=str(index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
+        statustexts[1].config(text=str(puzzlegame.index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
         is_solved()
 
     def soln_fwd():
-        if global_vars:
+        if global_vars[0]:
             deactivate()
         if puzzlegame.move_log == []:
             undo_button.config(state=tk.NORMAL)
         puzzlegame.cycle_solution(1)
         move = puzzlegame.move_log[-1]
-        index_opt = len(puzzlegame.move_log)
         statustexts[0].config(text="Piece " + piece_symbols[move//4] + " moves " + directions[move%4])
         solution_back.config(state=tk.NORMAL)
         place_pieces(pieces, empties)
-        if index_opt == len(puzzlegame.move_log_opt):
+        if puzzlegame.index_opt == len(puzzlegame.move_log_opt):
             solution_fwd.config(state=tk.DISABLED)
-        statustexts[1].config(text=str(index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
+        statustexts[1].config(text=str(puzzlegame.index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
         is_solved()
 
     ####################### GUI VISIBLE STUFF

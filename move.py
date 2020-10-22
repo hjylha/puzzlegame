@@ -124,10 +124,36 @@ def fix_pos_list(pos_list):
     return pos_list
 
 
-# pos_list[-1] = pos_list2[0]
+# pos_list1[-1] = pos_list2[0]
 # should this be checked here ???
 def combine_lists(pos_list1, pos_list2):
-    pos_list = pos_list2.copy()
-    pos_list.pop(0)
-    pos_list1.extend(pos_list)
-    return fix_pos_list(pos_list1.copy())
+    pos_list = pos_list1[:]
+    pos_list_2 = [pos_list1[-1]]
+    pos_list_2.extend(pos_list2[1:])
+    pos_list_2 = fix_pos_list(pos_list_2)
+    pos_list.extend(pos_list_2[1:])
+    # return fix_pos_list(pos_list)
+    return pos_list
+
+# THE REST MIGHT NOT BE NEEDED!!!!!
+# turning list of positions into a list of coordinates
+def simplify_pos_list(pos_list):
+    pos_list_to_return = []
+    for pos in pos_list:
+        pos_list_to_return.append(pos.pieces)
+    return pos_list_to_return
+
+# the other way around: coordinates into positions
+def into_pos_list(coord_list):
+    pos_list = []
+    for i in range(len(coord_list)):
+        pos_list.append(Positions(i, coord_list[i]))
+    return pos_list
+
+# combining lists of coordinates
+def combine_lists_of_coords(list1, list2):
+    if not(list1[-1] == list2[0]):
+        print("not valid lists")
+        return list1
+    coord_list = list1[:]
+    return coord_list.extend(list2[1:])
