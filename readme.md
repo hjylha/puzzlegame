@@ -9,12 +9,17 @@ Launch the game by typing
 
 You can select a piece by clicking or pressing the key corresponding to its "name". Once selected, the piece can be moved with arrow keys or by clicking on an empty spot. Alternatively, you can just drag the pieces around.
 
-Possible issues:
+
+This is the real life puzzle which inspired this project.
+
+![puzzle in real life](rl_puzzle.PNG)
+
+
+### Possible issues
 - Solver does not distinguish between mirrored positions, which might cause problems.
 
 
-Things to add maybe:
-- picture of the real life puzzle for reference
+### Things to add maybe
 - saving positions to databases instead of files
 - exploring weird paths (far from solutions)
 - would qt be better than tkinter?
