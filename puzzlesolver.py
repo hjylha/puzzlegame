@@ -1,4 +1,4 @@
-from puzzlegame_setup import piece_num, initial_positions
+from puzzlegame_setup import piece_num
 from positions import Positions, pos_with_stepnum, write_pos_list_to_file
 from move import move_ok, make_move, fix_pos_list
 

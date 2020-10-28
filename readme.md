@@ -15,11 +15,17 @@ This is the real life puzzle which inspired this project.
 ![puzzle in real life](rl_puzzle.PNG)
 
 
+### Currently working on
+- reworking Positions class
+- saving positions to a database
+
+
 ### Possible issues
 - Solver does not distinguish between mirrored positions, which might cause problems.
 
 
 ### Things to add maybe
-- saving positions to databases instead of files
+<!-- - saving positions to databases instead of files -->
+- Borders to the playing area
 - exploring weird paths (far from solutions)
 - would qt be better than tkinter?

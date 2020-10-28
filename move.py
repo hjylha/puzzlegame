@@ -1,4 +1,4 @@
-from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, all_pieces, piece_num, empty_num, initial_positions
+from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, all_pieces, piece_num, empty_num
 from positions import Positions
 
 # checking validity of moves

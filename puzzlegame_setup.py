@@ -27,6 +27,3 @@ def set_empty_num(piece_list, num_of_rows, num_of_columns):
 all_pieces = generate_piece_list(piece_nums, piece_types)
 piece_num = len(all_pieces)
 empty_num = set_empty_num(all_pieces, num_of_rows, num_of_columns)
-# game's starting position:
-initial_positions = ((4, 0), (3, 1), (3, 2), (4, 3), (0, 0), (2, 0), (0, 3), (2, 3), (2, 1), (0, 1))
-initial_empties = ((4, 1), (4, 2))

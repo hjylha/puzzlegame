@@ -1,8 +1,11 @@
 # from puzzlegame_setup import *
-from puzzlegame_setup import all_pos, piece_nums, all_pieces, piece_num, empty_num, initial_positions
+from puzzlegame_setup import all_pos, piece_nums, all_pieces, piece_num, empty_num
 
 
 class Positions:
+    # game's starting position:
+    initial_positions = ((4, 0), (3, 1), (3, 2), (4, 3), (0, 0), (2, 0), (0, 3), (2, 3), (2, 1), (0, 1))
+    initial_empties = ((4, 1), (4, 2))
     def __init__(self, stepnum = 0, pieces = initial_positions):
         self.stepnum = stepnum
         self.pieces = pieces
@@ -54,7 +57,7 @@ class Positions:
         for num in piece_nums:
             i0 = i
             i1 = i0 + num
-            for j in range(num):
+            for _ in range(num):
                 found_n = False
                 found_r = False
                 if self.pieces[i] in other.pieces[i0:i1] and continue_n:
