@@ -1,5 +1,5 @@
 # from puzzlegame_setup import *
-from puzzlegame_setup import all_pos, piece_nums, all_pieces, piece_num, empty_num
+from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, all_pieces, piece_num, empty_num
 
 
 class Positions:
@@ -10,9 +10,11 @@ class Positions:
         self.stepnum = stepnum
         self.pieces = pieces
         #self.empties = self.set_empties()
+        self.distance_to_end = False
 
     def solved(self):
         if self.pieces[-1] == (3, 1):
+            self.distance_to_end = 0
             return True
         return False
 
@@ -33,8 +35,8 @@ class Positions:
             if not(z in cover):
                 empties.append(z)
             if len(empties) == empty_num:
-                return empties
-        return empties
+                return tuple(empties)
+        return tuple(empties)
 
     def reflect(self):
         piece_pos = []
@@ -79,35 +81,96 @@ class Positions:
                     return False
         return True
 
-# find the pos with the given stepnum from a pos_list
-# list or set? does it matter?
-def pos_with_stepnum(num, pos_list):
-    pos_list_s = []
-    for pos in pos_list:
-        if pos.stepnum == num:
-            pos_list_s.append(pos)
-    return pos_list_s
+    # checking validity of moves
+    def move_left_ok(self, piece_id):
+        y, x = self.pieces[piece_id]
+        if x < 1:
+            return False
+        height = all_pieces[piece_id][0]
+        cover = self.pieces_cover()
+        for i in range(height):
+            if (y+i, x-1) in cover:
+                return False
+        return True
 
-# functions for saving positions to file
-def write_pos_list_to_file(pos_list, filename):
-    l = len(pos_list)
-    name = filename + "_" + str(l) + ".py"
-    file = open(name, "w")
-    file.write("from positions import Positions\n\n")
-    file.write("pos_list = []\n")
-    for i in range(l):
-        file.write("pos_list.append(Positions(" + str(pos_list[i].stepnum))
-        file.write(", " + str(pos_list[i].pieces) + "))\n")
-    file.close()
+    def move_right_ok(self, piece_id):
+        y, x = self.pieces[piece_id]
+        width = all_pieces[piece_id][1]
+        if x >= num_of_columns - width:
+            return False
+        height = all_pieces[piece_id][0]
+        cover = self.pieces_cover()
+        for i in range(height):
+            if (y+i, x+width) in cover:
+                return False
+        return True
 
-# not sure about this one
-# def write_pos_set_to_file(pos_set, filename):
-#     l = len(pos_set)
-#     name = filename + "_" + str(l) + ".py"
-#     file = open(name, "w")
-#     file.write("from positions import Positions\n\n")
-#     file.write("pos_set = set()\n")
-#     for pos in pos_set:
-#         file.write("pos_set.add(Positions(" + str(pos.stepnum))
-#         file.write(", " + str(pos.pieces) + "))\n")
-#     file.close()
+    def move_up_ok(self, piece_id):
+        y, x = self.pieces[piece_id]
+        if y < 1:
+            return False
+        width = all_pieces[piece_id][1]
+        cover = self.pieces_cover()
+        for i in range(width):
+            if (y-1, x+i) in cover:
+                return False
+        return True
+
+    def move_down_ok(self, piece_id):
+        y, x = self.pieces[piece_id]
+        height = all_pieces[piece_id][0]
+        if y >= num_of_rows - height:
+            return False
+        width = all_pieces[piece_id][1]
+        cover = self.pieces_cover()
+        for i in range(width):
+            if (y + height, x + i) in cover:
+                return False
+        return True
+
+
+    def move_ok(self, move):
+        if move < 0 or move >= piece_num * 4:
+            return False
+        if move % 4 == 0: # move.direction == "left":
+            return self.move_left_ok(move//4)
+        if move % 4 == 1: # move.direction == "right":
+            return self.move_right_ok(move // 4)
+        if move % 4 == 2: # move.direction == "up":
+            return self.move_up_ok(move // 4)
+        if move % 4 == 3: # move.direction == "down":
+            return self.move_down_ok(move // 4)
+        # if something strange happens, can't go anywhere
+        return False
+
+
+    # this doesn't check if the move can be made
+    def make_move(self, move):
+        # do we need to check for null move??
+        # if move == -1:
+        #    return pos
+        new_pos = list(self.pieces)
+        piece_id = move // 4
+        y = self.pieces[piece_id][0]
+        x = self.pieces[piece_id][1]
+        if move % 4 == 0: # move.direction == "left":
+            new_pos[piece_id] = (y, x - 1)
+        if move % 4 == 1: # move.direction == "right":
+            new_pos[piece_id] = (y, x + 1)
+        if move % 4 == 2: # move.direction == "up":
+            new_pos[piece_id] = (y - 1, x)
+        if move % 4 == 3: # move.direction == "down":
+            new_pos[piece_id] = (y + 1, x)
+        # bizarre directions don't matter, hopefully
+        #if not(move.direction in directions):
+            #return pos
+        return Positions(self.stepnum + 1, tuple(new_pos))
+
+    def move_from_coord(self, piece_id, to_coord):
+        for move in range(piece_id*4, piece_id*4+4):
+            if self.move_ok(move):
+                # next_pos = make_move(move, pos)
+                if to_coord in self.make_move(move).pieces_cover():
+                    return move
+        # if no move was found, return -1 (null move)
+        return -1

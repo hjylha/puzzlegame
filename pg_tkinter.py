@@ -5,7 +5,6 @@ def play_puzzlegame():
     from puzzlegame_setup import directions, piece_colors, piece_symbols
     from positions import Positions
     from puzzlegame import Puzzlegame
-    import move as mv
     import puzzlesolver as ps
     # import solution_opt_117
 
@@ -139,7 +138,7 @@ def play_puzzlegame():
         empty_spot = puzzlegame.show_empties()[empty_id]
         current_pos = Positions(0, puzzlegame.current_pos)
         if global_vars[0]:
-            move = mv.move_from_coord(puzzlegame.active_piece, empty_spot, current_pos)
+            move = current_pos.move_from_coord(puzzlegame.active_piece, empty_spot)
             if move == -1:
                 statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move to " + str(empty_spot))
             else:
@@ -317,7 +316,7 @@ def play_puzzlegame():
     def try_move_direction(num):
         if global_vars[0]:
             move = puzzlegame.active_piece * 4 + num
-            if mv.move_ok(move, Positions(0, puzzlegame.current_pos)):
+            if Positions(0, puzzlegame.current_pos).move_ok(move):
                 if puzzlegame.move_log == []:
                     undo_button.config(state=tk.NORMAL)
                 if puzzlegame.solution_mode:

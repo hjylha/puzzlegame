@@ -1,6 +1,6 @@
 from puzzlegame_setup import piece_num
-from positions import Positions, pos_with_stepnum, write_pos_list_to_file
-from move import move_ok, make_move, fix_pos_list
+from positions import Positions
+from position_lists import fix_pos_list, pos_with_stepnum, write_pos_list_to_file
 
 ''' 
     let's use big knowledge 
@@ -57,8 +57,8 @@ def solve_opt_w_fd(pos):
     pos_list = [pos]
     for i in range(dist_to_end):
         for move in range(piece_num * 4):
-            if move_ok(move, pos_list[i]):
-                next_pos = make_move(move, pos_list[i])
+            if pos_list[i].move_ok(move):
+                next_pos = pos_list[i].make_move(move)
                 if next_pos in test_pos[dist_to_end-i-1]:
                     pos_list.append(next_pos)
                     break
@@ -74,8 +74,8 @@ def find_end_positions(starting_positions):
         updated_active_pos = []
         for pos in active_pos:
             for move in range(piece_num * 4):
-                if move_ok(move, pos):
-                    next_pos = make_move(move, pos)
+                if pos.move_ok(move):
+                    next_pos = pos.make_move(move)
                     if not(next_pos in all_pos):
                         all_pos.append(next_pos)
                         updated_active_pos.append(next_pos)
@@ -94,8 +94,8 @@ def distance_to_pos_list(pos_list):
         updated_active_pos = []
         for pos in active_pos:
             for move in range(piece_num * 4):
-                if move_ok(move, pos):
-                    next_pos = make_move(move, pos)
+                if pos.move_ok(move):
+                    next_pos = pos.make_move(move)
                     if not(next_pos in reached_pos):
                         reached_pos.append(next_pos)
                         updated_active_pos.append(next_pos)
@@ -126,8 +126,8 @@ def find_opt_soln(starting_pos):
         updated_latest_pos = []
         for pos in latest_pos:
             for move in range(piece_num * 4):
-                if move_ok(move, pos):
-                    next_pos = make_move(move, pos)
+                if pos.move_ok(move):
+                    next_pos = pos.make_move(move)
                     # if next_pos has not been visited
                     if not(next_pos in all_att):
                         all_att.append(next_pos)
@@ -147,8 +147,8 @@ def find_opt_soln(starting_pos):
         next_pos = soln_opt[-1]
         potential_pos = pos_with_stepnum(curr_stepnum, all_att)
         for move in range(piece_num * 4):
-            if move_ok(move, next_pos):
-                pos = make_move(move, next_pos)
+            if next_pos.move_ok(move):
+                pos = next_pos.make_move(move)
                 if pos in potential_pos:
                     soln_opt.append(pos)
                     print("Found step", curr_stepnum)
@@ -168,8 +168,8 @@ def generate_soln_from_all_pos():
         curr_pos = soln[-1]
         potential_pos = pos_with_stepnum(num_of_steps - i, all_pos)
         for move in range(4 * piece_num):
-            if move_ok(move, curr_pos):
-                pos = make_move(move, curr_pos)
+            if curr_pos.move_ok(move):
+                pos = curr_pos.make_move(move)
                 if pos in potential_pos:
                     soln.append(pos)
                     break

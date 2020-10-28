@@ -1,5 +1,5 @@
 from positions import Positions
-import move as mv
+import position_lists as pl
 
 class Puzzlegame:
 
@@ -55,8 +55,8 @@ class Puzzlegame:
 
     def make_move(self, move):
         pos = Positions(0, self.current_pos)
-        if mv.move_ok(move, pos):
-            self.current_pos = mv.make_move(move, pos).pieces
+        if pos.move_ok(move):
+            self.current_pos = pos.make_move(move).pieces
             self.move_log.append(move)
             self.pos_log.append(self.current_pos)
             self.index_opt += 1
@@ -115,7 +115,7 @@ class Puzzlegame:
         self.reset()
         self.solution_mode = True
         pos_log_opt = solution_opt_117.pos_list
-        self.move_log_opt = mv.move_list_from_pos_list(pos_log_opt)
+        self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda x: x.pieces, pos_log_opt))
 
     def find_solution(self):
@@ -125,8 +125,8 @@ class Puzzlegame:
         # ROPLEMS maybe fixed
         pos_log = [Positions(i, self.pos_log[i]) for i in range(len(self.pos_log))]
         pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
-        pos_log_opt = mv.combine_lists(pos_log, pos_list)
-        self.move_log_opt = mv.move_list_from_pos_list(pos_log_opt)
+        pos_log_opt = pl.combine_lists(pos_log, pos_list)
+        self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda p: p.pieces, pos_log_opt))
         if self.current_pos != self.pos_log_opt[self.index_opt]:
             print(" big problems!!!!!!!!!!!!!!!!")
