@@ -11,12 +11,26 @@ def play_puzzlegame():
     # window with two frames on the left and one on the right
     main_window = tk.Tk()
     main_window.title("An interesting little puzzle to solve")
+    # game_window = tk.LabelFrame(main_window, padx=1, pady=1)
     game_area = tk.LabelFrame(main_window, padx=1, pady=1)
     statusline = tk.LabelFrame(main_window, padx=1, pady=1)
     sideframe = tk.LabelFrame(main_window, padx=1, pady=1)
+    # game_window.grid(row=0, column=0, padx=0, pady=0)
     game_area.grid(row=0, column=0, padx=1, pady=1)
     statusline.grid(row=1, column=0, sticky=tk.W + tk.E)
     sideframe.grid(row=0, column=1, rowspan=2, sticky=tk.N+tk.S)
+
+    # # black borders around the game area (going with another implementation)
+    # game_area = tk.LabelFrame(game_window, padx=1, pady=1)
+    # black_bar_up = tk.Label(game_window, text="", bg="black")
+    # black_bar_left = tk.Label(game_window, text="", bg="black")
+    # black_bar_right = tk.Label(game_window, text="", bg="black")
+    # black_bar_down = tk.Label(game_window, text="", bg="black")
+    # black_bar_up.grid(row=0, column=0, columnspan=3, sticky=tk.W + tk.E)
+    # black_bar_left.grid(row=1, column=0, sticky=tk.N + tk.S)
+    # game_area.grid(row=1, column=1, padx=0, pady=0)
+    # black_bar_right.grid(row=1, column=2, sticky=tk.N + tk.S)
+    # black_bar_down.grid(row=2, column=0, columnspan=3, sticky=tk.W + tk.E)
 
     # active global variables
     # highlighted = False
@@ -30,11 +44,11 @@ def play_puzzlegame():
         k = 0
         for j in range(len(piece_nums)):
             for i in range(piece_nums[j]):
-                buttons[k].grid(row=pos[k][0], column=pos[k][1],
+                buttons[k].grid(row=pos[k][0]+1, column=pos[k][1]+1,
                             rowspan=piece_types[j][0], columnspan=piece_types[j][1], sticky=tk.W + tk.E + tk.N + tk.S)
                 k += 1
         for i in range(len(puzzlegame.show_empties())):
-            ebuttons[i].grid(row=puzzlegame.show_empties()[i][0], column=puzzlegame.show_empties()[i][1])
+            ebuttons[i].grid(row=puzzlegame.show_empties()[i][0]+1, column=puzzlegame.show_empties()[i][1]+1)
 
     def is_solved():
         if puzzlegame.is_solved():
@@ -242,7 +256,7 @@ def play_puzzlegame():
             piece = tk.Button(game_area, text=piece_symbols[k], bg=piece_colors[j], width=b_d(k)[0],
                             height=b_d(k)[1], command=lambda k=k: pressed(k))
             pieces.append(piece)
-            pieces[k].grid(row=puzzlegame.current_pos[k][0], column=puzzlegame.current_pos[k][1],
+            pieces[k].grid(row=puzzlegame.current_pos[k][0]+1, column=puzzlegame.current_pos[k][1]+1,
                         rowspan=piece_types[j][0], columnspan=piece_types[j][1], sticky=tk.W+tk.E+tk.N+tk.S)
             k += 1
 
@@ -251,8 +265,19 @@ def play_puzzlegame():
     for i in range(len(puzzlegame.show_empties())):
         empty_square = tk.Button(game_area, text="", width=12, height=6, command=lambda i=i: try_move(i))
         empties.append(empty_square)
-        empties[i].grid(row=puzzlegame.show_empties()[i][0], column=puzzlegame.show_empties()[i][1])
+        empties[i].grid(row=puzzlegame.show_empties()[i][0]+1, column=puzzlegame.show_empties()[i][1]+1)
 
+    # black borders around game area
+    black_bar_up = tk.Label(game_area, text="", bg="black")
+    black_bar_left = tk.Label(game_area, text="   ", bg="black")
+    black_bar_right = tk.Label(game_area, text="   ", bg="black")
+    black_bar_down1 = tk.Label(game_area, text="", bg="black")
+    black_bar_down2 = tk.Label(game_area, text="", bg="black")
+    black_bar_up.grid(row=0, column=0, columnspan=6, sticky=tk.W + tk.E)
+    black_bar_left.grid(row=1, column=0, rowspan=5, sticky=tk.N +tk.S)
+    black_bar_right.grid(row=1, column=5, rowspan=5, sticky=tk.N +tk.S)
+    black_bar_down1.grid(row=6, column=0, columnspan=2, sticky=tk.W + tk.E)
+    black_bar_down2.grid(row=6, column=4, columnspan=2, sticky=tk.W + tk.E)
 
     ################## status line things
     # 2 status texts for some reason
