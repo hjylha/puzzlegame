@@ -301,7 +301,8 @@ def play_puzzlegame():
     restart_button = tk.Button(sideframe, text="Restart", width=20, command=restart)
     sidebuttons.append(restart_button)
     description = tk.Label(sideframe, text="Move the red piece 'D'\n out of the game area.\n " +
-                                        "'D' can only exit the area\n through the center \n of the lower border.")
+                                        "'D' can only exit the area\n through the center \n of the lower border.\n" +
+                                        "Other pieces cannot\n leave the game area.")
     sidebuttons.append(description)
     undo_button = tk.Button(sideframe, text="Undo last move", width=20, state=tk.DISABLED, command=undo)
     sidebuttons.append(undo_button)
