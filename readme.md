@@ -19,6 +19,7 @@ This is the real life puzzle which inspired this project.
 ### Currently working on
 - reworking Positions class (maybe changes to Puzzlegame class as well)
 - borders to the playing area (is it good now?)
+- saving positions to databases instead of files
 
 
 ### Possible issues
@@ -27,7 +28,6 @@ This is the real life puzzle which inspired this project.
 
 
 ### Things to add maybe
-- saving positions to databases instead of files
 - classes for pieces??
 - exploring weird paths (far from solutions)
 - would qt be better than tkinter?
