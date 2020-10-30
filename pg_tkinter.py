@@ -285,13 +285,13 @@ def play_puzzlegame():
     for i in range(2):
         statustext = tk.Label(statusline, text="                              ", width=30)
         statustexts.append(statustext)
-        statustexts[i].grid(row=i, column=1, pady=2)
+        statustexts[i].grid(row=i, column=1, padx=30, pady=2)
 
     # buttons to navigate solutions
     solution_back = tk.Button(statusline, text="<<", state=tk.DISABLED, command=soln_back)
     solution_fwd = tk.Button(statusline, text=">>", state=tk.DISABLED, command=soln_fwd)
-    solution_back.grid(row=0, column=0, rowspan=3, pady=10, sticky=tk.E)
-    solution_fwd.grid(row=0, column=2, rowspan=3, pady=10, sticky=tk.E)
+    solution_back.grid(row=0, column=0, rowspan=3, padx=20, sticky=tk.E)
+    solution_fwd.grid(row=0, column=2, rowspan=3, padx=20, sticky=tk.W)
 
 
     # sideframe buttons and stuff
