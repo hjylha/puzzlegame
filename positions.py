@@ -10,7 +10,7 @@ class Positions:
         self.stepnum = stepnum
         self.pieces = pieces
         #self.empties = self.set_empties()
-        self.distance_to_end = False
+        self.distance_to_end = -1
 
     def solved(self):
         if self.pieces[-1] == (3, 1):
