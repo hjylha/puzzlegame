@@ -20,7 +20,7 @@ class Puzzlegame:
         self.move_log_opt = []
 
     def show_empties(self):
-        return Positions(0, self.current_pos).set_empties()
+        return Positions(self.current_pos, self.index_opt).set_empties()
 
     def is_solved(self):
         if self.current_pos[-1] == (3, 1):
@@ -54,7 +54,7 @@ class Puzzlegame:
     #     self.active_piece = -1
 
     def make_move(self, move):
-        pos = Positions(0, self.current_pos)
+        pos = Positions(self.current_pos, self.index_opt)
         if pos.move_ok(move):
             self.current_pos = pos.make_move(move).pieces
             self.move_log.append(move)
@@ -111,20 +111,26 @@ class Puzzlegame:
                 return True
 
     def show_solution(self):
-        import solution_opt_117
+        # import solution_opt_117
+        import puzzlesolver
         self.reset()
         self.solution_mode = True
-        pos_log_opt = solution_opt_117.pos_list
+        pos_log_opt = puzzlesolver.find_soln_from_start()
         self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda x: x.pieces, pos_log_opt))
 
     def find_solution(self):
         import puzzlesolver
         self.solution_mode = True
-        pos = Positions(self.index_opt, self.current_pos)
+        pos = Positions(self.current_pos, self.index_opt)
         # ROPLEMS maybe fixed
-        pos_log = [Positions(i, self.pos_log[i]) for i in range(len(self.pos_log))]
-        pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
+        pos_log = [Positions(self.pos_log[i], i) for i in range(len(self.pos_log))]
+        # pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
+        pos_list = puzzlesolver.solve_opt_w_db(pos)
+        if pos_list[-1].solved():
+            print("we've done it!!!")
+        else:
+            print("Victory screen missing...")
         pos_log_opt = pl.combine_lists(pos_log, pos_list)
         self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda p: p.pieces, pos_log_opt))
@@ -133,7 +139,7 @@ class Puzzlegame:
             # mirror images!!
             print(self.current_pos)
             print(self.pos_log_opt[self.index_opt])
-            print(Positions(0, self.current_pos) == Positions(0, self.pos_log_opt[self.index_opt]))
+            print(Positions(self.current_pos, 0) == Positions(self.pos_log_opt[self.index_opt], 0))
             # print("edelliset")
             print(pos_log[self.index_opt].pieces)
             print(pos_log_opt[self.index_opt].pieces)
