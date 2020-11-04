@@ -150,7 +150,7 @@ def play_puzzlegame():
     def try_move(empty_id):
         # do we need highlighted or active_piece here??
         empty_spot = puzzlegame.show_empties()[empty_id]
-        current_pos = Positions(0, puzzlegame.current_pos)
+        current_pos = Positions(puzzlegame.current_pos)
         if global_vars[0]:
             move = current_pos.move_from_coord(puzzlegame.active_piece, empty_spot)
             if move == -1:
@@ -342,7 +342,7 @@ def play_puzzlegame():
     def try_move_direction(num):
         if global_vars[0]:
             move = puzzlegame.active_piece * 4 + num
-            if Positions(0, puzzlegame.current_pos).move_ok(move):
+            if Positions(puzzlegame.current_pos).move_ok(move):
                 if puzzlegame.move_log == []:
                     undo_button.config(state=tk.NORMAL)
                 if puzzlegame.solution_mode:

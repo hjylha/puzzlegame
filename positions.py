@@ -6,17 +6,20 @@ class Positions:
     # game's starting position:
     initial_positions = ((4, 0), (3, 1), (3, 2), (4, 3), (0, 0), (2, 0), (0, 3), (2, 3), (2, 1), (0, 1))
     initial_empties = ((4, 1), (4, 2))
-    def __init__(self, stepnum = 0, pieces = initial_positions):
-        self.stepnum = stepnum
+    def __init__(self, pieces = initial_positions, stepnum = 0, dist_to_end = -1):
         self.pieces = pieces
+        self.stepnum = stepnum
         #self.empties = self.set_empties()
-        self.distance_to_end = -1
+        self.distance_to_end = dist_to_end
 
     def solved(self):
         if self.pieces[-1] == (3, 1):
             self.distance_to_end = 0
             return True
-        return False
+        else:
+            if self.distance_to_end == 0:
+                self.distance_to_end = -1
+            return False
 
     def pieces_cover(self):
         cover = []
@@ -47,7 +50,9 @@ class Positions:
                 piece_pos.append((y, 3-x))
             if all_pieces[j][1] == 2:
                 piece_pos.append((y, 2-x))
-        return Positions(self.stepnum, tuple(piece_pos))
+        return tuple(piece_pos)
+        # no need to create a new Positions object, since reflected object will be equal
+        # return Positions(tuple(piece_pos), self.stepnum, self.distance_to_end)
 
     def __eq__(self, other):
         # equality ignores stepnum, but takes reflection into account
@@ -64,7 +69,7 @@ class Positions:
                 found_r = False
                 if self.pieces[i] in other.pieces[i0:i1] and continue_n:
                     found_n = True
-                if self.pieces[i] in other_r.pieces[i0:i1] and continue_r:
+                if self.pieces[i] in other_r[i0:i1] and continue_r:
                     found_r = True
                 # if we found corresponding piece locations, we continue checking
                 if found_n or found_r:
@@ -145,7 +150,8 @@ class Positions:
 
 
     # this doesn't check if the move can be made
-    def make_move(self, move):
+    # I don't think the going_fwd variable does anything, so REMOVE???
+    def make_move(self, move, going_fwd = True):
         # do we need to check for null move??
         # if move == -1:
         #    return pos
@@ -164,7 +170,10 @@ class Positions:
         # bizarre directions don't matter, hopefully
         #if not(move.direction in directions):
             #return pos
-        return Positions(self.stepnum + 1, tuple(new_pos))
+        if going_fwd:
+            return Positions(tuple(new_pos), self.stepnum + 1, self.distance_to_end)
+        else:
+            return Positions(tuple(new_pos), self.stepnum, self.distance_to_end + 1)
 
     def move_from_coord(self, piece_id, to_coord):
         for move in range(piece_id*4, piece_id*4+4):

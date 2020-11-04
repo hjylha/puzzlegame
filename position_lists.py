@@ -52,7 +52,7 @@ def simplify_pos_list(pos_list):
 def into_pos_list(coord_list):
     pos_list = []
     for i in range(len(coord_list)):
-        pos_list.append(Positions(i, coord_list[i]))
+        pos_list.append(Positions(coord_list[i], i))
     return pos_list
 
 # combining lists of coordinates
@@ -66,14 +66,22 @@ def combine_lists_of_coords(list1, list2):
 
 # find the pos with the given stepnum from a pos_list
 # list or set? does it matter?
-def pos_with_stepnum(num, pos_list):
-    pos_list_s = []
-    for pos in pos_list:
-        if pos.stepnum == num:
-            pos_list_s.append(pos)
-    return pos_list_s
+# def pos_with_stepnum(num, pos_list):
+#     pos_list_s = []
+#     for pos in pos_list:
+#         if pos.stepnum == num:
+#             pos_list_s.append(pos)
+#     return pos_list_s
+
+# def pos_with_dist_to_end(num, pos_list):
+#     return [pos for pos in pos_list if pos.distance_to_end == num]
+    # pos_list_d = []
+    # for pos in pos_list:
+    #     if pos.distance_to_end == num:
+    #         pos_list_d.append
 
 # functions for saving positions to file
+# should this make use of distance_to_end
 def write_pos_list_to_file(pos_list, filename):
     l = len(pos_list)
     name = filename + "_" + str(l) + ".py"
@@ -81,8 +89,8 @@ def write_pos_list_to_file(pos_list, filename):
     file.write("from positions import Positions\n\n")
     file.write("pos_list = []\n")
     for i in range(l):
-        file.write("pos_list.append(Positions(" + str(pos_list[i].stepnum))
-        file.write(", " + str(pos_list[i].pieces) + "))\n")
+        file.write("pos_list.append(Positions(" + str(pos_list[i].pieces))
+        file.write(", " + str(pos_list[i].stepnum) + ", " + str(pos_list[i].distance_to_end) + "))\n")
     file.close()
 
 # not sure about this one
