@@ -189,12 +189,15 @@ def distance_to_pos_list(pos_list):
 
 def generate_pos_files():
     # generate end positions and write them to file "end_positions_484.py"
+    # is this needed???
     end_positions = find_end_positions(Positions())
-    write_pos_list_to_file(end_positions, "end_positions")
-    filename1 = "end_positions_" + str(len(end_positions)) + ".py"
-    print(len(end_positions), "end positions found and written to file " + filename1)
+    # write_pos_list_to_file(end_positions, "end_positions")
+    # filename1 = "end_positions_" + str(len(end_positions)) + ".py"
+    # print(len(end_positions), "end positions found and written to file " + filename1)
     # generate all positions with their distance (stepnum) from end positions and write to "all_pos_13011.py"
     all_pos = distance_to_pos_list(end_positions)
+    for pos in all_pos:
+        pos.solved()
     write_pos_list_to_file(all_pos, "all_pos")
     filename2 = "all_pos_" + str(len(all_pos)) + ".py"
     print(len(all_pos), "positions with distances to end found and written to file " + filename2)
