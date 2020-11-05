@@ -111,11 +111,14 @@ class Puzzlegame:
                 return True
 
     def show_solution(self):
-        # import solution_opt_117
-        import puzzlesolver
         self.reset()
         self.solution_mode = True
-        pos_log_opt = puzzlesolver.find_soln_from_start()
+        ##### Choose the first 2 or last 2 lines of the 4 next lines (file or database)
+        import solution_opt_117
+        pos_log_opt = solution_opt_117.pos_list
+        # import puzzlesolver
+        # pos_log_opt = puzzlesolver.find_soln_from_start()
+        #####
         self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda x: x.pieces, pos_log_opt))
 
@@ -123,10 +126,11 @@ class Puzzlegame:
         import puzzlesolver
         self.solution_mode = True
         pos = Positions(self.current_pos, self.index_opt)
-        # ROPLEMS maybe fixed
         pos_log = [Positions(self.pos_log[i], i) for i in range(len(self.pos_log))]
-        # pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
-        pos_list = puzzlesolver.solve_opt_w_db(pos)
+        ##### Choose one of the two lines below (file or database)
+        pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
+        # pos_list = puzzlesolver.solve_opt_w_db(pos)
+        ##### 
         if pos_list[-1].solved():
             print("we've done it!!!")
         else:
