@@ -173,7 +173,10 @@ class Positions:
         if going_fwd:
             return Positions(tuple(new_pos), self.stepnum + 1, self.distance_to_end)
         else:
-            return Positions(tuple(new_pos), self.stepnum, self.distance_to_end + 1)
+            dist_to_end = -1
+            if self.distance_to_end > -1:
+                dist_to_end = self.distance_to_end + 1
+            return Positions(tuple(new_pos), self.stepnum, dist_to_end)
 
     def move_from_coord(self, piece_id, to_coord):
         for move in range(piece_id*4, piece_id*4+4):
