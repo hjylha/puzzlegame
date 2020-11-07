@@ -1,11 +1,10 @@
-from puzzlegame_setup import piece_num
 from positions import Positions
 
 
 def move_list_from_pos_list(pos_list):
     move_list = []
     for i in range(len(pos_list)-1):
-        for move in range(piece_num * 4):
+        for move in range(pos_list[i].piece_num * 4):
             if pos_list[i+1].pieces == pos_list[i].make_move(move).pieces:
                 move_list.append(move)
                 break
@@ -17,7 +16,7 @@ def fix_pos_list(pos_list):
         return pos_list
     for i in range(1, len(pos_list)):
         moved = False
-        for move in range(piece_num * 4):
+        for move in range(pos_list[i].piece_num * 4):
             if pos_list[i-1].move_ok(move):
                 possible_pos = pos_list[i-1].make_move(move)
                 if pos_list[i] == possible_pos:
