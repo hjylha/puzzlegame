@@ -1,6 +1,7 @@
 # from puzzlegame_setup import piece_num
 from positions import Positions
-from position_lists import fix_pos_list, write_pos_list_to_file
+import position_lists as pl
+# from position_lists import fix_pos_list, write_pos_list_to_file
 
 ''' 
     let's use big knowledge 
@@ -198,7 +199,7 @@ def generate_pos_files():
     all_pos = distance_to_pos_list(end_positions)
     for pos in all_pos:
         pos.solved()
-    write_pos_list_to_file(all_pos, "all_pos")
+    pl.write_pos_list_to_file(all_pos, "all_pos")
     filename2 = "all_pos_" + str(len(all_pos)) + ".py"
     print(len(all_pos), "positions with distances to end found and written to file " + filename2)
 
@@ -230,6 +231,27 @@ def generate_pos_db():
     db_functions.save_pos_list_to_db(all_pos)
     print(len(all_pos), "positions found and saved to database")
     print(db_functions.check_pos_db())
+
+def generate_pos_db_v2():
+    import db_functions
+    if not db_functions.does_db_exist():
+        db_functions.create_pos_db()
+    else:
+        db_functions.reset_pos_db()
+    all_pos = pl.explore_the_positions()
+    print(len(all_pos), "positions found")
+    end_pos = [pos for pos in all_pos if pos.distance_to_end == 0]
+    print(len(end_pos), "end positions found with the find_all_pos function")
+    db_functions.save_pos_list_to_db(all_pos)
+    print(len(all_pos), "positions found and saved to database")
+    print(db_functions.check_pos_db())
+
+def generate_pos_files_from_db():
+    import db_functions
+    all_pos = db_functions.load_pos_list_from_db()
+    pl.write_pos_list_to_file(all_pos, "all_pos")
+    filename2 = "all_pos_" + str(len(all_pos)) + ".py"
+    print(len(all_pos), "positions with distances to end found and written to file " + filename2)
 
 # Finding and saving an optimal solution with a given starting position
 def find_opt_soln(starting_pos):
@@ -273,7 +295,7 @@ def find_opt_soln(starting_pos):
                     break
     # remember to reverse the order of soln_opt
     soln_opt.reverse()
-    return fix_pos_list(soln_opt)
+    return pl.fix_pos_list(soln_opt)
 
 # use all_pos file to generate an optimal solution
 def generate_soln_from_all_pos():
@@ -293,12 +315,12 @@ def generate_soln_from_all_pos():
                     soln.append(pos)
                     break
     filename = "solution_opt_" + str(len(soln)) + ".py"
-    write_pos_list_to_file(soln, "solution_opt")
+    pl.write_pos_list_to_file(soln, "solution_opt")
     print("Optimal solution saved to file " + filename)
 
 def generate_soln():
     soln_opt = find_opt_soln(Positions())
     filename = "solution_opt_" + str(len(soln_opt)) + ".py"
-    write_pos_list_to_file(soln_opt, "solution_opt")
+    pl.write_pos_list_to_file(soln_opt, "solution_opt")
     print("Optimal solution saved to file " + filename)
 
