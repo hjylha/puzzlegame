@@ -1,4 +1,4 @@
-import sqlite3
+# import sqlite3
 from positions import Positions
 
 # conn = sqlite3.connect("position.db")

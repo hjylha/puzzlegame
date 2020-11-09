@@ -7,9 +7,11 @@ def create_pos_db():
     conn = sqlite3.connect("position.db")
     c = conn.cursor()
     c.execute("""CREATE TABLE positions (
-        positions TEXT,
+        position TEXT,
         dist_from_start INTEGER,
-        dist_from_end INTEGER
+        dist_from_end INTEGER,
+        id INTEGER,
+        neigbors TEXT
     )
         """)
     conn.commit()
@@ -24,9 +26,11 @@ def reset_pos_db():
     conn.commit()
 
     c.execute("""CREATE TABLE positions (
-        positions TEXT,
+        position TEXT,
         dist_from_start INTEGER,
-        dist_from_end INTEGER
+        dist_from_end INTEGER,
+        id INTEGER,
+        neigbors TEXT
     )
         """)
     conn.commit()
@@ -72,7 +76,7 @@ def save_pos_list_to_db(pos_list):
     c = conn.cursor()
     for pos in pos_list:
         # maybe distance_to_end has not been calculated yet
-        c.execute("INSERT INTO positions VALUES (?, ?, ?)", (str(pos.pieces), pos.stepnum, pos.distance_to_end))
+        c.execute("INSERT INTO positions VALUES (?, ?, ?, ?, ?)", (str(pos.pieces), pos.stepnum, pos.distance_to_end, pos.id, str(pos.neighbors)))
         # this does not work
         # c.execute(f"INSERT INTO positions VALUES ({str(pos.pieces)}, {pos.stepnum}, {pos.distance_to_end})")
     conn.commit()
@@ -89,6 +93,8 @@ def load_pos_list_from_db():
     for item in pos_list_raw:
         pos_coords = change_pos_string_to_tuple(item[0])
         pos = Positions(pos_coords, item[1], item[2])
+        pos.id = item[3]
+        pos.neighbors = change_neighbor_string_to_set(item[4])
         pos_list.append(pos)
     return pos_list
 
@@ -97,16 +103,34 @@ def load_pos_list_from_db():
 def change_pos_string_to_tuple(pos_as_string):
     chars = "01234"
 
-    def is_char_in_chars(a):
-        if a in chars:
-            return True
-        else:
-            return False
+    # def is_char_in_chars(a):
+    #     if a in chars:
+    #         return True
+    #     else:
+    #         return False
 
     # initial_list = pos_as_string.split(", ")
     initial_list = list(pos_as_string)
-    list_of_coords = list(filter(is_char_in_chars, initial_list))
+    # list_of_coords = list(filter(is_char_in_chars, initial_list))
+    list_of_coords = list(filter(lambda c: c in chars, initial_list))
     pos_list = []
     for i in range(piece_num):
         pos_list.append((int(list_of_coords[2 * i]), int(list_of_coords[2 * i + 1])))
     return tuple(pos_list)
+
+def change_neighbor_string_to_set(set_as_string):
+    neighbor_set = set()
+    chars = "0123456789"
+    str_num = ""
+    found_number = False
+    for char in set_as_string:
+        if char in chars:
+            found_number = True
+            str_num = str_num + char
+        else:
+            if found_number:
+                neighbor_set.add(int(str_num))
+                str_num = ""
+            found_number = False
+    return neighbor_set
+    
