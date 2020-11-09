@@ -39,6 +39,64 @@ def combine_lists(pos_list1, pos_list2):
     # return fix_pos_list(pos_list)
     return pos_list
 
+
+# functions for saving positions to file
+# should this make use of distance_to_end
+def write_pos_list_to_file(pos_list, filename):
+    l = len(pos_list)
+    name = filename + "_" + str(l) + ".py"
+    file = open(name, "w")
+    file.write("from positions import Positions\n\n")
+    file.write("pos_list = []\n")
+    for i in range(l):
+        file.write("pos_list.append(Positions(" + str(pos_list[i].pieces))
+        file.write(", " + str(pos_list[i].stepnum) + ", " + str(pos_list[i].distance_to_end) + "))\n")
+    file.close()
+
+def explore_the_positions():
+    all_pos = [Positions()]
+    active_ids = [0]
+    id = 1
+    while not active_ids == []:
+        updated_active_ids = []
+        for i in active_ids:
+            for move in range(all_pos[i].piece_num * 4):
+                if all_pos[i].move_ok(move):
+                    next_pos = all_pos[i].make_move(move)
+                    if next_pos in all_pos:
+                        id0 = all_pos.index(next_pos)
+                        if not(id0 in all_pos[i].neighbors):
+                            all_pos[i].neighbors.add(id0)
+                            all_pos[id0].neighbors.add(i)
+                    else:
+                        all_pos.append(next_pos)
+                        all_pos[-1].id = id
+                        all_pos[-1].neighbors.add(i)
+                        all_pos[i].neighbors.add(id)
+                        updated_active_ids.append(id)
+                        if all_pos.index(next_pos) == id:
+                            print(id, "new position added correctly")
+                        # is this needed
+                        if all_pos[-1].solved():
+                            if not all_pos[i].solved():
+                                all_pos[i].distance_to_end = 1
+                        id += 1
+        active_ids = updated_active_ids
+    checked_ids = [pos.id for pos in all_pos if pos.distance_to_end == 0]
+    active_ids = checked_ids
+    # dist_to_end = 1
+    while not active_ids == []:
+        updated_active_ids = []
+        for i in active_ids:
+            for j in all_pos[i].neighbors:
+                if not j in checked_ids:
+                    all_pos[j].distance_to_end = all_pos[i].distance_to_end + 1
+                    updated_active_ids.append(j)
+                    checked_ids.append(j)
+        active_ids = updated_active_ids
+    return all_pos
+
+
 # THE REST MIGHT NOT BE NEEDED!!!!!
 # turning list of positions into a list of coordinates
 def simplify_pos_list(pos_list):
@@ -61,45 +119,3 @@ def combine_lists_of_coords(list1, list2):
         return list1
     coord_list = list1[:]
     return coord_list.extend(list2[1:])
-
-
-# find the pos with the given stepnum from a pos_list
-# list or set? does it matter?
-# def pos_with_stepnum(num, pos_list):
-#     pos_list_s = []
-#     for pos in pos_list:
-#         if pos.stepnum == num:
-#             pos_list_s.append(pos)
-#     return pos_list_s
-
-# def pos_with_dist_to_end(num, pos_list):
-#     return [pos for pos in pos_list if pos.distance_to_end == num]
-    # pos_list_d = []
-    # for pos in pos_list:
-    #     if pos.distance_to_end == num:
-    #         pos_list_d.append
-
-# functions for saving positions to file
-# should this make use of distance_to_end
-def write_pos_list_to_file(pos_list, filename):
-    l = len(pos_list)
-    name = filename + "_" + str(l) + ".py"
-    file = open(name, "w")
-    file.write("from positions import Positions\n\n")
-    file.write("pos_list = []\n")
-    for i in range(l):
-        file.write("pos_list.append(Positions(" + str(pos_list[i].pieces))
-        file.write(", " + str(pos_list[i].stepnum) + ", " + str(pos_list[i].distance_to_end) + "))\n")
-    file.close()
-
-# not sure about this one
-# def write_pos_set_to_file(pos_set, filename):
-#     l = len(pos_set)
-#     name = filename + "_" + str(l) + ".py"
-#     file = open(name, "w")
-#     file.write("from positions import Positions\n\n")
-#     file.write("pos_set = set()\n")
-#     for pos in pos_set:
-#         file.write("pos_set.add(Positions(" + str(pos.stepnum))
-#         file.write(", " + str(pos.pieces) + "))\n")
-#     file.close()
