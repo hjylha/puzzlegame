@@ -181,12 +181,15 @@ class Positions:
         #if not(move.direction in directions):
             #return pos
         if going_fwd:
-            return Positions(tuple(new_pos), self.stepnum + 1, self.distance_to_end)
+            next_pos = Positions(tuple(new_pos), self.stepnum + 1, -1)
         else:
             dist_to_end = -1
             if self.distance_to_end > -1:
                 dist_to_end = self.distance_to_end + 1
-            return Positions(tuple(new_pos), self.stepnum, dist_to_end)
+            next_pos = Positions(tuple(new_pos), self.stepnum, dist_to_end)
+        # is more complicated check for distance_to_end needed??
+        next_pos.solved()
+        return next_pos
 
     def move_from_coord(self, piece_id, to_coord):
         for move in range(piece_id*4, piece_id*4+4):
