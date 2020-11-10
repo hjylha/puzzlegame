@@ -121,6 +121,34 @@ def solve_opt_w_db(pos):
         # print(i, moved)
     return pos_list
 
+def solve_opt_w_db_v2(pos):
+    import db_functions
+    # checking database
+    if db_functions.does_db_exist():
+        if not(db_functions.check_pos_db()):
+            return False
+    else:
+        return False
+    # actually solving problems
+    all_pos = db_functions.load_pos_list_from_db()
+    i_0 = all_pos.index(pos)
+    pos_list = [all_pos[i_0]]
+    while not pos_list[-1].solved():
+        d = pos_list[-1].distance_to_end
+        # if d == -1:
+        #     print("something went wrong")
+        #     return False
+        # if pos_list[-1].neighbors == set():
+        #     print("no neighbors")
+        #     return False
+        # print(d, "steps to end")
+        # print(len(pos_list[-1].neighbors), "positions to check at this step")
+        for id in pos_list[-1].neighbors:
+            if all_pos[id].distance_to_end < d:
+                pos_list.append(all_pos[id])
+                break
+    return pos_list
+
 def find_soln_from_start():
     import db_functions
     # checking database

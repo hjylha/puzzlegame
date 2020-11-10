@@ -128,8 +128,8 @@ class Puzzlegame:
         pos = Positions(self.current_pos, self.index_opt)
         pos_log = [Positions(self.pos_log[i], i) for i in range(len(self.pos_log))]
         ##### Choose one of the two lines below (file or database)
-        pos_list = puzzlesolver.solve_opt_w_fd_v2(pos)
-        # pos_list = puzzlesolver.solve_opt_w_db(pos)
+        # pos_list = puzzlesolver.solve_opt_w_fd_v2(pos)
+        pos_list = puzzlesolver.solve_opt_w_db_v2(pos)
         ##### 
         pos_log_opt = pl.combine_lists(pos_log, pos_list)
         self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
