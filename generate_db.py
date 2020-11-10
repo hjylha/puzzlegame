@@ -8,7 +8,7 @@ import time
 start_time = time.time()
 
 import puzzlesolver as ps
-ps.generate_pos_db()
+ps.generate_pos_db_v2()
 
 # end time
 end_time = time.time()
