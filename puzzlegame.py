@@ -128,28 +128,9 @@ class Puzzlegame:
         pos = Positions(self.current_pos, self.index_opt)
         pos_log = [Positions(self.pos_log[i], i) for i in range(len(self.pos_log))]
         ##### Choose one of the two lines below (file or database)
-        pos_list = puzzlesolver.solve_opt_w_fd(pos)[0]
+        pos_list = puzzlesolver.solve_opt_w_fd_v2(pos)
         # pos_list = puzzlesolver.solve_opt_w_db(pos)
         ##### 
-        if pos_list[-1].solved():
-            print("we've done it!!!")
-        else:
-            print("Victory screen missing...")
         pos_log_opt = pl.combine_lists(pos_log, pos_list)
         self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda p: p.pieces, pos_log_opt))
-        if self.current_pos != self.pos_log_opt[self.index_opt]:
-            print(" big problems!!!!!!!!!!!!!!!!")
-            # mirror images!!
-            print(self.current_pos)
-            print(self.pos_log_opt[self.index_opt])
-            print(Positions(self.current_pos, 0) == Positions(self.pos_log_opt[self.index_opt], 0))
-            # print("edelliset")
-            print(pos_log[self.index_opt].pieces)
-            print(pos_log_opt[self.index_opt].pieces)
-            for i in range(len(self.pos_log)):
-                if self.pos_log[i] != self.pos_log_opt[i]:
-                    print("differences spotted!!!")
-                    print(i)
-                    print(self.pos_log[i])
-                    print(self.pos_log_opt[i])

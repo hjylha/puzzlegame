@@ -1,7 +1,5 @@
-# from puzzlegame_setup import piece_num
 from positions import Positions
 import position_lists as pl
-# from position_lists import fix_pos_list, write_pos_list_to_file
 
 ''' 
     let's use big knowledge 
@@ -66,6 +64,29 @@ def solve_opt_w_fd(pos):
                     break
     return [pos_list, True]
 
+def solve_opt_w_fd_v2(pos):
+    if not(does_all_pos_file_exist()):
+        return False
+    import all_pos_13011
+    all_pos = all_pos_13011.pos_list
+    i_0 = all_pos.index(pos)
+    pos_list = [all_pos[i_0]]
+    while not pos_list[-1].solved():
+        d = pos_list[-1].distance_to_end
+        # if d == -1:
+        #     print("something went wrong")
+        #     return False
+        # if pos_list[-1].neighbors == set():
+        #     print("no neighbors")
+        #     return False
+        # print(d, "steps to end")
+        # print(len(pos_list[-1].neighbors), "positions to check at this step")
+        for id in pos_list[-1].neighbors:
+            if all_pos[id].distance_to_end < d:
+                pos_list.append(all_pos[id])
+                break
+    return pos_list
+
 def solve_opt_w_db(pos):
     import db_functions
     # checking database
@@ -79,8 +100,8 @@ def solve_opt_w_db(pos):
     all_pos = db_functions.load_pos_list_from_db()
     i_0 = all_pos.index(pos)
     dist_to_end = all_pos[i_0].distance_to_end
-    print(dist_to_end)
-    print(len([p for p in all_pos if p.distance_to_end == 0]))
+    # print(dist_to_end)
+    # print(len([p for p in all_pos if p.distance_to_end == 0]))
     if dist_to_end == 0:
         return [pos]
     test_pos = []
