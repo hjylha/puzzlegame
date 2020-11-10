@@ -16,28 +16,22 @@ This is the real life puzzle which inspired this project.
 ![puzzle in real life](rl_puzzle.PNG)
 
 
-### Currently working on
-- reworking Positions class (maybe changes to Puzzlegame class as well)
-- borders to the playing area (is it good now?)
-- saving positions to databases instead of files
+<!-- ### Currently working on -->
+
 
 
 ### Possible issues
-- 324 solved pos not marked as solved
-- 176 not solved positions marked as solved
 - Trying to move the big piece out of the puzzle area should maybe give a better response than "cannot move down".
 - Solver does not distinguish between mirrored positions, which might cause problems.
+- Solver not extensively tested.
 
 
-### Recent changes
-- Switched around the parameters of Positions class initializer
-- This necessitated changes to a lot of the other files as well
-- Added distance_to_end property to Positions
-- .reflect() does not create a new Positions object anymore, only a tuple
-- .make_move() can have direction (forwards or backwards)
+<!-- ### Recent changes -->
+
 
 
 ### Things to add maybe
 - classes for pieces??
+- does Puzzlegame class need modification?
 - exploring weird paths (far from solutions)
 - would qt be better than tkinter?
