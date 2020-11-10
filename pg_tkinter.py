@@ -16,7 +16,7 @@ def play_puzzlegame():
     statusline = tk.LabelFrame(main_window, padx=1, pady=1)
     sideframe = tk.LabelFrame(main_window, padx=1, pady=1)
     # game_window.grid(row=0, column=0, padx=0, pady=0)
-    game_area.grid(row=0, column=0, padx=1, pady=1)
+    game_area.grid(row=0, column=0, padx=0, pady=0)
     statusline.grid(row=1, column=0, sticky=tk.W + tk.E)
     sideframe.grid(row=0, column=1, rowspan=2, sticky=tk.N+tk.S)
 
@@ -357,7 +357,9 @@ def play_puzzlegame():
                 statustexts[0].config(text="Piece " + piece_symbols[puzzlegame.active_piece] + " moves " + directions[num])
                 is_solved()
             else:
-                statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move " + directions[num])
+                # big piece cannot actually move down to complete the puzzle, but no need to point this out
+                if not(move == 39 and puzzlegame.current_pos[-1] == (3, 1)):
+                    statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move " + directions[num])
 
     def try_left(event):
         try_move_direction(0)

@@ -21,7 +21,6 @@ This is the real life puzzle which inspired this project.
 
 
 ### Possible issues
-- Trying to move the big piece out of the puzzle area should maybe give a better response than "cannot move down".
 - Solver does not distinguish between mirrored positions, which might cause problems.
 - Solver not extensively tested.
 
@@ -34,4 +33,6 @@ This is the real life puzzle which inspired this project.
 - classes for pieces??
 - does Puzzlegame class need modification?
 - exploring weird paths (far from solutions)
+- should there be a response to trying to move the big piece out of the puzzle area 
+- grid method might not be the best for placing puzzle pieces
 - would qt be better than tkinter?
