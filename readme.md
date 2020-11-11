@@ -30,7 +30,7 @@ This is the real life puzzle which inspired this project.
 
 
 ### Things to add maybe
-- classes for pieces??
+- classes for pieces?? Could be needlessly complicated?
 - does Puzzlegame class need modification?
 - exploring weird paths (far from solutions)
 - should there be a response to trying to move the big piece out of the puzzle area 
