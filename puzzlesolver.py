@@ -41,31 +41,6 @@ def does_soln_117_file_exist():
 # then we can just solve the problem
 def solve_opt_w_fd(pos):
     if not(does_all_pos_file_exist()):
-        # if data does not exist, return False for failure
-        return [[pos], False]
-    import all_pos_13011
-    all_pos = all_pos_13011.pos_list
-    i_0 = all_pos.index(pos)
-    dist_to_end = all_pos[i_0].stepnum
-    if dist_to_end == 0:
-        return [[pos], True]
-    test_pos = []
-    for i in range(dist_to_end):
-        # test_pos.append(pos_with_stepnum(i, all_pos))
-        test_pos.append([p for p in all_pos if p.stepnum == i])
-    # del all_pos[i_0:]
-    pos_list = [pos]
-    for i in range(dist_to_end):
-        for move in range(pos.piece_num * 4):
-            if pos_list[i].move_ok(move):
-                next_pos = pos_list[i].make_move(move)
-                if next_pos in test_pos[dist_to_end-i-1]:
-                    pos_list.append(next_pos)
-                    break
-    return [pos_list, True]
-
-def solve_opt_w_fd_v2(pos):
-    if not(does_all_pos_file_exist()):
         return False
     import all_pos_13011
     all_pos = all_pos_13011.pos_list
@@ -73,14 +48,6 @@ def solve_opt_w_fd_v2(pos):
     pos_list = [all_pos[i_0]]
     while not pos_list[-1].solved():
         d = pos_list[-1].distance_to_end
-        # if d == -1:
-        #     print("something went wrong")
-        #     return False
-        # if pos_list[-1].neighbors == set():
-        #     print("no neighbors")
-        #     return False
-        # print(d, "steps to end")
-        # print(len(pos_list[-1].neighbors), "positions to check at this step")
         for id in pos_list[-1].neighbors:
             if all_pos[id].distance_to_end < d:
                 pos_list.append(all_pos[id])
@@ -88,40 +55,6 @@ def solve_opt_w_fd_v2(pos):
     return pos_list
 
 def solve_opt_w_db(pos):
-    import db_functions
-    # checking database
-    if db_functions.does_db_exist():
-        pass
-        # if not(db_functions.check_pos_db()):
-        #     return False
-    else:
-        return False
-    # actually solving problems
-    all_pos = db_functions.load_pos_list_from_db()
-    i_0 = all_pos.index(pos)
-    dist_to_end = all_pos[i_0].distance_to_end
-    # print(dist_to_end)
-    # print(len([p for p in all_pos if p.distance_to_end == 0]))
-    if dist_to_end == 0:
-        return [pos]
-    test_pos = []
-    for i in range(dist_to_end):
-        test_pos.append([p for p in all_pos if p.distance_to_end == i])
-    # del all_pos[i_0:]
-    pos_list = [pos]
-    for i in range(dist_to_end):
-        # moved = False
-        for move in range(pos.piece_num * 4):
-            if pos_list[i].move_ok(move):
-                next_pos = pos_list[i].make_move(move)
-                if next_pos in test_pos[dist_to_end-i-1]:
-                    pos_list.append(next_pos)
-                    # moved = True
-                    break
-        # print(i, moved)
-    return pos_list
-
-def solve_opt_w_db_v2(pos):
     import db_functions
     # checking database
     if db_functions.does_db_exist():
@@ -135,14 +68,6 @@ def solve_opt_w_db_v2(pos):
     pos_list = [all_pos[i_0]]
     while not pos_list[-1].solved():
         d = pos_list[-1].distance_to_end
-        # if d == -1:
-        #     print("something went wrong")
-        #     return False
-        # if pos_list[-1].neighbors == set():
-        #     print("no neighbors")
-        #     return False
-        # print(d, "steps to end")
-        # print(len(pos_list[-1].neighbors), "positions to check at this step")
         for id in pos_list[-1].neighbors:
             if all_pos[id].distance_to_end < d:
                 pos_list.append(all_pos[id])
@@ -154,8 +79,8 @@ def find_soln_from_start():
     # checking database
     if db_functions.does_db_exist():
         pass
-        # if not(db_functions.check_pos_db()):
-        #     return False
+        if not(db_functions.check_pos_db()):
+            return False
     else:
         return False
     # actually solving problems
@@ -259,34 +184,6 @@ def generate_pos_db():
         db_functions.create_pos_db()
     else:
         db_functions.reset_pos_db()
-    all_pos = find_all_positions()
-    end_pos = [pos for pos in all_pos if pos.distance_to_end == 0]
-    print(len(end_pos), "end positions found with the find_all_pos function")
-    # end positions should have distance_to_end = 0, so turn to distance 1
-    d = 1
-    active_pos = list(filter(lambda pos: pos.distance_to_end == d, all_pos))
-    while not(active_pos == []):
-        updated_active_pos = []
-        d += 1
-        for pos in active_pos:
-            for move in range(pos.piece_num * 4):
-                if pos.move_ok(move):
-                    current_pos = pos.make_move(move, False)
-                    i0 = all_pos.index(current_pos)
-                    if all_pos[i0].distance_to_end == -1:
-                        all_pos[i0].distance_to_end = d
-                        updated_active_pos.append(all_pos[i0])
-        active_pos = updated_active_pos.copy()
-    db_functions.save_pos_list_to_db(all_pos)
-    print(len(all_pos), "positions found and saved to database")
-    print(db_functions.check_pos_db())
-
-def generate_pos_db_v2():
-    import db_functions
-    if not db_functions.does_db_exist():
-        db_functions.create_pos_db()
-    else:
-        db_functions.reset_pos_db()
     all_pos = pl.explore_the_positions()
     print(len(all_pos), "positions found")
     end_pos = [pos for pos in all_pos if pos.distance_to_end == 0]
@@ -327,8 +224,6 @@ def find_opt_soln(starting_pos):
                             found_the_end = True
                         updated_latest_pos.append(next_pos)
         latest_pos = updated_latest_pos
-        # print(num_of_steps_taken, len(latest_pos))
-        # num_of_steps_taken += 1
     # backtracking to the start using the all_att
     for i in range(1, num_of_steps):
         curr_stepnum = num_of_steps - i - 1
@@ -347,6 +242,7 @@ def find_opt_soln(starting_pos):
     return pl.fix_pos_list(soln_opt)
 
 # use all_pos file to generate an optimal solution
+# IS THIS CORRECT???
 def generate_soln_from_all_pos():
     import all_pos_13011
     all_pos = all_pos_13011.pos_list

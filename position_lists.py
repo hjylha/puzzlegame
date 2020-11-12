@@ -41,7 +41,6 @@ def combine_lists(pos_list1, pos_list2):
 
 
 # functions for saving positions to file
-# should this make use of distance_to_end
 def write_pos_list_to_file(pos_list, filename):
     l = len(pos_list)
     name = filename + "_" + str(l) + ".py"
@@ -76,9 +75,6 @@ def explore_the_positions():
                         all_pos[-1].neighbors.add(i)
                         all_pos[i].neighbors.add(id)
                         updated_active_ids.append(id)
-                        # if all_pos.index(next_pos) == id:
-                        #     print(id, "new position added correctly")
-                        # is this needed
                         if all_pos[-1].solved():
                             if not all_pos[i].solved():
                                 all_pos[i].distance_to_end = 1
