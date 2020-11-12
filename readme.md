@@ -16,13 +16,15 @@ This is the real life puzzle which inspired this project.
 ![puzzle in real life](rl_puzzle.PNG)
 
 
-<!-- ### Currently working on -->
+### Currently working on
+- Database and file checks should be updated
 
 
 
 ### Possible issues
 - Solver does not distinguish between mirrored positions, which might cause problems.
 - Solver not extensively tested.
+
 
 
 <!-- ### Recent changes -->
