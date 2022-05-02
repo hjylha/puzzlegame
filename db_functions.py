@@ -93,7 +93,7 @@ def load_pos_list_from_db():
     for item in pos_list_raw:
         pos_coords = change_pos_string_to_tuple(item[0])
         pos = Positions(pos_coords, item[1], item[2])
-        pos.id = item[3]
+        pos.pos_id = item[3]
         pos.neighbors = change_neighbor_string_to_set(item[4])
         pos_list.append(pos)
     return pos_list

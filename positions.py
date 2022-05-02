@@ -3,8 +3,6 @@ from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, a
 
 
 class Positions:
-    # keeping track of all positions (probably does not work)
-    # all_pos = []
     # game's starting position:
     initial_positions = ((4, 0), (3, 1), (3, 2), (4, 3), (0, 0), (2, 0), (0, 3), (2, 3), (2, 1), (0, 1))
     initial_empties = ((4, 1), (4, 2))
@@ -18,9 +16,9 @@ class Positions:
         # would be nice to have these with __init__ but I don't know how
         self.neighbors = set()
         if self.pieces == self.initial_positions:
-            self.id = 0
+            self.pos_id = 0
         else:
-            self.id = -1
+            self.pos_id = -1
 
     def solved(self):
         if self.pieces[-1] == (3, 1):

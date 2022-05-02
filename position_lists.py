@@ -57,7 +57,7 @@ def write_pos_list_to_file(pos_list, filename):
 def explore_the_positions():
     all_pos = [Positions()]
     active_ids = [0]
-    id = 1
+    curr_id = 1
     while not active_ids == []:
         updated_active_ids = []
         for i in active_ids:
@@ -71,16 +71,16 @@ def explore_the_positions():
                             all_pos[id0].neighbors.add(i)
                     else:
                         all_pos.append(next_pos)
-                        all_pos[-1].id = id
+                        all_pos[-1].pos_id = curr_id
                         all_pos[-1].neighbors.add(i)
-                        all_pos[i].neighbors.add(id)
-                        updated_active_ids.append(id)
+                        all_pos[i].neighbors.add(curr_id)
+                        updated_active_ids.append(curr_id)
                         if all_pos[-1].solved():
                             if not all_pos[i].solved():
                                 all_pos[i].distance_to_end = 1
-                        id += 1
+                        curr_id += 1
         active_ids = updated_active_ids
-    checked_ids = [pos.id for pos in all_pos if pos.distance_to_end == 0]
+    checked_ids = [pos.pos_id for pos in all_pos if pos.distance_to_end == 0]
     active_ids = checked_ids
     # dist_to_end = 1
     while not active_ids == []:
