@@ -76,7 +76,7 @@ def save_pos_list_to_db(pos_list):
     c = conn.cursor()
     for pos in pos_list:
         # maybe distance_to_end has not been calculated yet
-        c.execute("INSERT INTO positions VALUES (?, ?, ?, ?, ?)", (str(pos.pieces), pos.stepnum, pos.distance_to_end, pos.id, str(pos.neighbors)))
+        c.execute("INSERT INTO positions VALUES (?, ?, ?, ?, ?)", (str(pos.pieces), pos.stepnum, pos.distance_to_end, pos.pos_id, str(pos.neighbors)))
         # this does not work
         # c.execute(f"INSERT INTO positions VALUES ({str(pos.pieces)}, {pos.stepnum}, {pos.distance_to_end})")
     conn.commit()
