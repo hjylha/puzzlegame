@@ -2,9 +2,11 @@ from positions import Positions
 
 
 def move_list_from_pos_list(pos_list):
+    if len(pos_list) == 1:
+        return []
     move_list = []
-    for i in range(len(pos_list)-1):
-        for move in range(pos_list[i].piece_num * 4):
+    for i in range(len(pos_list) - 1):
+        for move in range(Positions.piece_num * 4):
             if pos_list[i+1].pieces == pos_list[i].make_move(move).pieces:
                 move_list.append(move)
                 break
@@ -12,17 +14,20 @@ def move_list_from_pos_list(pos_list):
 
 
 def fix_pos_list(pos_list):
-    if len(pos_list) == 1:
-        return pos_list
-    for i in range(1, len(pos_list)):
-        moved = False
-        for move in range(pos_list[i].piece_num * 4):
-            if pos_list[i-1].move_ok(move):
-                possible_pos = pos_list[i-1].make_move(move)
-                if pos_list[i] == possible_pos:
-                    pos_list[i] = possible_pos
-                    moved = True
-        if not(moved):
+    # if len(pos_list) == 1:
+    #     return pos_list
+    # for i in range(1, len(pos_list)):
+    last = len(pos_list) - 1
+    for i, pos in enumerate(pos_list):
+        if i == last:
+            return pos_list
+        for move in range(Positions.piece_num * 4):
+            if pos.move_ok(move):
+                possible_pos = pos.make_move(move)
+                if pos_list[i+1] == possible_pos:
+                    pos_list[i+1] = possible_pos
+                    break
+        else:
             print("not a valid list of positions")
             return pos_list
     return pos_list
@@ -50,22 +55,27 @@ def write_pos_list_to_file(pos_list, filename):
     for i in range(l):
         file.write("pos_list.append(Positions(" + str(pos_list[i].pieces))
         file.write(", " + str(pos_list[i].stepnum) + ", " + str(pos_list[i].distance_to_end) + "))\n")
-        file.write("pos_list[-1].id = " + str(pos_list[i].id) + "\n")
+        file.write("pos_list[-1].pos_id = " + str(pos_list[i].id) + "\n")
         file.write("pos_list[-1].neighbors = " + str(pos_list[i].neighbors) + "\n")
     file.close()
 
 def explore_the_positions():
     all_pos = [Positions()]
-    active_ids = [0]
+    num_of_moves = Positions.piece_num * 4
+    # active_ids = [0]
     curr_id = 1
-    while not active_ids == []:
-        updated_active_ids = []
-        for i in active_ids:
-            for move in range(all_pos[i].piece_num * 4):
+    low_index = 0
+    next_index = 0
+    forward_index = curr_id
+    while next_index < forward_index:
+        # updated_active_ids = []
+        searchable_pos = all_pos[low_index:]
+        for i in range(next_index, forward_index):
+            for move in range(num_of_moves):
                 if all_pos[i].move_ok(move):
                     next_pos = all_pos[i].make_move(move)
-                    if next_pos in all_pos:
-                        id0 = all_pos.index(next_pos)
+                    if next_pos in searchable_pos:
+                        id0 = low_index + searchable_pos.index(next_pos)
                         if not(id0 in all_pos[i].neighbors):
                             all_pos[i].neighbors.add(id0)
                             all_pos[id0].neighbors.add(i)
@@ -74,16 +84,20 @@ def explore_the_positions():
                         all_pos[-1].pos_id = curr_id
                         all_pos[-1].neighbors.add(i)
                         all_pos[i].neighbors.add(curr_id)
-                        updated_active_ids.append(curr_id)
+                        # updated_active_ids.append(curr_id)
                         if all_pos[-1].solved():
                             if not all_pos[i].solved():
                                 all_pos[i].distance_to_end = 1
                         curr_id += 1
-        active_ids = updated_active_ids
+                        searchable_pos.append(next_pos)
+        # active_ids = updated_active_ids
+        low_index = next_index
+        next_index = forward_index
+        forward_index = curr_id
     checked_ids = [pos.pos_id for pos in all_pos if pos.distance_to_end == 0]
     active_ids = checked_ids
     # dist_to_end = 1
-    while not active_ids == []:
+    while active_ids:
         updated_active_ids = []
         for i in active_ids:
             for j in all_pos[i].neighbors:
