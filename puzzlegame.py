@@ -20,7 +20,7 @@ class Puzzlegame:
         self.move_log_opt = []
 
     def show_empties(self):
-        return Positions(self.current_pos, self.index_opt).set_empties()
+        return tuple(Positions(self.current_pos, self.index_opt).set_empties())
 
     def is_solved(self):
         if self.current_pos[-1] == (3, 1):
