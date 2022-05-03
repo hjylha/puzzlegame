@@ -1,3 +1,4 @@
+
 from positions import Positions
 
 
@@ -46,19 +47,23 @@ def combine_lists(pos_list1, pos_list2):
 
 
 # functions for saving positions to file
-def write_pos_list_to_file(pos_list, filename):
-    l = len(pos_list)
-    name = filename + "_" + str(l) + ".py"
-    file = open(name, "w")
-    file.write("from positions import Positions\n\n")
-    file.write("pos_list = []\n")
-    for i in range(l):
-        file.write("pos_list.append(Positions(" + str(pos_list[i].pieces))
-        file.write(", " + str(pos_list[i].stepnum) + ", " + str(pos_list[i].distance_to_end) + "))\n")
-        file.write("pos_list[-1].pos_id = " + str(pos_list[i].id) + "\n")
-        file.write("pos_list[-1].neighbors = " + str(pos_list[i].neighbors) + "\n")
-    file.close()
+def write_pos_list_to_file(pos_list, filepath):
+    # l = len(pos_list)
+    # name = f"{filename}.py"
+    # file = open(name, "w")
+    with open(filepath, "w") as file:
+        file.write("from positions import Positions\n\n")
+        file.write("pos_list = []\n")
+        # for i in range(l):
+        for pos in pos_list:
+            file.write(f"pos_list.append(Positions( {str(pos.pieces)}")
+            file.write(f", {str(pos.stepnum)}, {str(pos.distance_to_end)}")
+            file.write(f", {str(pos.pos_id)}, set({str(pos.neighbors)})))\n")
+            # file.write("pos_list[-1].pos_id = " + str(pos_list[i].pos_id) + "\n")
+            # file.write("pos_list[-1].neighbors = " + str(pos_list[i].neighbors) + "\n")
+    # file.close()
 
+# THE BIG ONE
 def explore_the_positions():
     all_pos = [Positions()]
     num_of_moves = Positions.piece_num * 4

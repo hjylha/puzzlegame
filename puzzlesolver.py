@@ -173,8 +173,8 @@ def generate_pos_files():
     all_pos = distance_to_pos_list(end_positions)
     for pos in all_pos:
         pos.solved()
-    pl.write_pos_list_to_file(all_pos, "all_pos")
     filename2 = "all_pos_" + str(len(all_pos)) + ".py"
+    pl.write_pos_list_to_file(all_pos, filename2)
     print(len(all_pos), "positions with distances to end found and written to file " + filename2)
 
 # Create a database containing all positions and their distance from end positions
@@ -195,8 +195,8 @@ def generate_pos_db():
 def generate_pos_files_from_db():
     import db_functions
     all_pos = db_functions.load_pos_list_from_db()
-    pl.write_pos_list_to_file(all_pos, "all_pos")
-    filename2 = "all_pos_" + str(len(all_pos)) + ".py"
+    filename2 = f"all_pos_{str(len(all_pos))}.py"
+    pl.write_pos_list_to_file(all_pos, filename2)
     print(len(all_pos), "positions with distances to end found and written to file " + filename2)
 
 # Finding and saving an optimal solution with a given starting position
@@ -259,13 +259,13 @@ def generate_soln_from_all_pos():
                 if pos in potential_pos:
                     soln.append(pos)
                     break
-    filename = "solution_opt_" + str(len(soln)) + ".py"
-    pl.write_pos_list_to_file(soln, "solution_opt")
+    filename = f"solution_opt_{str(len(soln))}.py"
+    pl.write_pos_list_to_file(soln, filename)
     print("Optimal solution saved to file " + filename)
 
 def generate_soln():
     soln_opt = find_opt_soln(Positions())
     filename = "solution_opt_" + str(len(soln_opt)) + ".py"
-    pl.write_pos_list_to_file(soln_opt, "solution_opt")
+    pl.write_pos_list_to_file(soln_opt, filename)
     print("Optimal solution saved to file " + filename)
 
