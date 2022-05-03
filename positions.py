@@ -1,5 +1,5 @@
 # from puzzlegame_setup import *
-from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, all_pieces, piece_num, empty_num
+from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, all_pieces, empty_num
 
 
 class Positions:
@@ -8,55 +8,58 @@ class Positions:
     initial_empties = ((4, 1), (4, 2))
     piece_num = len(initial_positions)
 
-    def __init__(self, pieces = initial_positions, stepnum = 0, dist_to_end = -1):
+    def __init__(self, pieces = initial_positions, stepnum = 0, dist_to_end = -1, pos_id = 0, neighbors = None):
         self.pieces = pieces
         self.stepnum = stepnum
         #self.empties = self.set_empties()
         self.distance_to_end = dist_to_end
-        # would be nice to have these with __init__ but I don't know how
-        self.neighbors = set()
-        if self.pieces == self.initial_positions:
-            self.pos_id = 0
+        self.pos_id = pos_id
+        # is this check necessary?
+        # if self.pieces == self.initial_positions:
+        #     self.pos_id = 0
+        if neighbors is None:
+            self.neighbors = set()
         else:
-            self.pos_id = -1
+            self.neighbors = neighbors
+        
 
     def solved(self):
         if self.pieces[-1] == (3, 1):
             self.distance_to_end = 0
             return True
-        else:
-            if self.distance_to_end == 0:
-                self.distance_to_end = -1
-            return False
+        if self.distance_to_end == 0:
+            self.distance_to_end = -1
+        return False
 
     def pieces_cover(self):
-        cover = []
-        for j in range(piece_num):
-            y0 = self.pieces[j][0]
-            x0 = self.pieces[j][1]
-            for y in range(all_pieces[j][0]):
-                for x in range(all_pieces[j][1]):
-                    cover.append((y0 + y, x0 + x))
-        return tuple(cover)
+        cover = set()
+        for j, dimensions in enumerate(all_pieces):
+        # for j in range(piece_num):
+            y0, x0 = self.pieces[j]
+            for y in range(dimensions[0]):
+                for x in range(dimensions[1]):
+                    cover.add((y0 + y, x0 + x))
+        return cover
 
     def set_empties(self):
-        empties = []
+        empties = set()
         cover = self.pieces_cover()
         for z in all_pos:
-            if not(z in cover):
-                empties.append(z)
+            if z not in cover:
+                empties.add(z)
             if len(empties) == empty_num:
-                return tuple(empties)
-        return tuple(empties)
+                return empties
+        return empties
 
     def reflect(self):
         piece_pos = []
-        for j in range(piece_num):
-            y = self.pieces[j][0]
-            x = self.pieces[j][1]
-            if all_pieces[j][1] == 1:
+        for j, dimensions in enumerate(all_pieces):
+        # for j in range(piece_num):
+            y, x = self.pieces[j]
+            # x = self.pieces[j][1]
+            if dimensions[1] == 1:
                 piece_pos.append((y, 3-x))
-            if all_pieces[j][1] == 2:
+            if dimensions[1] == 2:
                 piece_pos.append((y, 2-x))
         return tuple(piece_pos)
         # no need to create a new Positions object, since reflected object will be equal
@@ -143,7 +146,7 @@ class Positions:
 
 
     def move_ok(self, move):
-        if move < 0 or move >= piece_num * 4:
+        if move < 0 or move >= Positions.piece_num * 4:
             return False
         if move % 4 == 0: # move.direction == "left":
             return self.move_left_ok(move//4)
