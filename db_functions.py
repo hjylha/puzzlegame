@@ -23,10 +23,10 @@ def perform_db_actions(command_to_execute, *args):
 
 def create_pos_db_command():
     return f"""CREATE TABLE {POSITIONS_TABLE_NAME} (
-        position TEXT,
+        position TEXT UNIQUE NOT NULL,
         dist_from_start INTEGER,
         dist_from_end INTEGER,
-        id INTEGER,
+        id INTEGER UNIQUE NOT NULL,
         neighbors TEXT
     )
         """
@@ -34,38 +34,10 @@ def create_pos_db_command():
 # Is this a good way to structure the database???
 def create_pos_db():
     perform_db_actions(create_pos_db_command())
-    # conn = sqlite3.connect(DB_FILEPATH)
-    # c = conn.cursor()
-    # c.execute("""CREATE TABLE positions (
-    #     position TEXT,
-    #     dist_from_start INTEGER,
-    #     dist_from_end INTEGER,
-    #     id INTEGER,
-    #     neigbors TEXT
-    # )
-    #     """)
-    # conn.commit()
-    # conn.close()
     print(f"Database '{DB_FILENAME}' created")
 
 def reset_pos_db():
     perform_db_actions(f"DROP TABLE {POSITIONS_TABLE_NAME}", create_pos_db_command())
-    # conn = sqlite3.connect(DB_FILEPATH)
-    # c = conn.cursor()
-
-    # c.execute("DROP TABLE positions")
-    # conn.commit()
-
-    # c.execute("""CREATE TABLE positions (
-    #     position TEXT,
-    #     dist_from_start INTEGER,
-    #     dist_from_end INTEGER,
-    #     id INTEGER,
-    #     neigbors TEXT
-    # )
-    #     """)
-    # conn.commit()
-    # conn.close()
     print(f"Database '{DB_FILENAME}' reset")
 
 def does_db_exist():
