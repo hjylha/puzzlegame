@@ -1,7 +1,7 @@
 
 def play_puzzlegame():
     import tkinter as tk
-    from puzzlegame_setup import all_pos, piece_nums, piece_types, all_pieces, piece_num, empty_num
+    from puzzlegame_setup import all_pos, piece_nums, piece_types, all_pieces, PIECE_NUM, empty_num
     from puzzlegame_setup import directions, piece_colors, piece_symbols
     from positions import Positions
     from puzzlegame import Puzzlegame

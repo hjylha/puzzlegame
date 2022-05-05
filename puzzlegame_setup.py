@@ -4,9 +4,9 @@ piece_symbols = ("1", "2", "3", "4", "Q", "W", "E", "R", "S", "D")
 piece_colors = ("orange", "green", "yellow", "red")
 
 # coordinates for 5x4 grid
-num_of_rows = 5
-num_of_columns = 4
-all_pos = tuple((y,x) for y in range(num_of_rows) for x in range(num_of_columns))
+NUM_OF_ROWS = 5
+NUM_OF_COLUMNS = 4
+all_pos = tuple((y,x) for y in range(NUM_OF_ROWS) for x in range(NUM_OF_COLUMNS))
 
 # GENERATING PIECES
 # 4 1x1 pieces, 4 2x1 pieces, 1 1x2 piece and 1 2x2 piece
@@ -25,5 +25,5 @@ def set_empty_num(piece_list, num_of_rows, num_of_columns):
     return e_num
 
 all_pieces = generate_piece_list(piece_nums, piece_types)
-piece_num = len(all_pieces)
-empty_num = set_empty_num(all_pieces, num_of_rows, num_of_columns)
+PIECE_NUM = len(all_pieces)
+empty_num = set_empty_num(all_pieces, NUM_OF_ROWS, NUM_OF_COLUMNS)

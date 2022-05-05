@@ -7,7 +7,7 @@ def move_list_from_pos_list(pos_list):
         return []
     move_list = []
     for i in range(len(pos_list) - 1):
-        for move in range(Positions.piece_num * 4):
+        for move in range(Positions.PIECE_NUM * 4):
             if pos_list[i+1].pieces == pos_list[i].make_move(move).pieces:
                 move_list.append(move)
                 break
@@ -22,7 +22,7 @@ def fix_pos_list(pos_list):
     for i, pos in enumerate(pos_list):
         if i == last:
             return pos_list
-        for move in range(Positions.piece_num * 4):
+        for move in range(Positions.PIECE_NUM * 4):
             if pos.move_ok(move):
                 possible_pos = pos.make_move(move)
                 if pos_list[i+1] == possible_pos:
@@ -66,7 +66,7 @@ def write_pos_list_to_file(pos_list, filepath):
 # THE BIG ONE
 def explore_the_positions():
     all_pos = [Positions()]
-    num_of_moves = Positions.piece_num * 4
+    num_of_moves = Positions.PIECE_NUM * 4
     # active_ids = [0]
     curr_id = 1
     low_index = 0

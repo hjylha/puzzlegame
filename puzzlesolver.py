@@ -87,7 +87,7 @@ def find_soln_from_start():
     all_pos = db_functions.load_pos_list_from_db()
     pos_list = [pos for pos in all_pos if pos.stepnum == 0]
     while not pos_list[-1].solved():
-        for move in range(pos_list[-1].piece_num * 4):
+        for move in range(Positions.PIECE_NUM * 4):
             if pos_list[-1].move_ok(move):
                 next_pos = pos_list[-1].make_move(move)
                 i0 = all_pos.index(next_pos)
@@ -104,7 +104,7 @@ def find_end_positions(starting_positions):
     while not(active_pos == []):
         updated_active_pos = []
         for pos in active_pos:
-            for move in range(pos.piece_num * 4):
+            for move in range(Positions.PIECE_NUM * 4):
                 if pos.move_ok(move):
                     next_pos = pos.make_move(move)
                     if not(next_pos in all_pos):
@@ -124,7 +124,7 @@ def find_all_positions():
     while not(active_pos == []):
         updated_active_pos = []
         for pos in active_pos:
-            for move in range(pos.piece_num * 4):
+            for move in range(pos.PIECE_NUM * 4):
                 if pos.move_ok(move):
                     next_pos = pos.make_move(move)
                     if not(next_pos in all_pos):
@@ -153,7 +153,7 @@ def distance_to_pos_list(pos_list):
     while not(active_pos == []):
         updated_active_pos = []
         for pos in active_pos:
-            for move in range(pos.piece_num * 4):
+            for move in range(Positions.PIECE_NUM * 4):
                 if pos.move_ok(move):
                     next_pos = pos.make_move(move)
                     if not(next_pos in reached_pos):
@@ -185,9 +185,9 @@ def generate_pos_db():
     else:
         db_functions.reset_pos_db()
     all_pos = pl.explore_the_positions()
-    print(len(all_pos), "positions found")
-    end_pos = [pos for pos in all_pos if pos.distance_to_end == 0]
-    print(len(end_pos), "end positions found with the find_all_pos function")
+    # print(len(all_pos), "positions found")
+    # end_pos = [pos for pos in all_pos if pos.distance_to_end == 0]
+    # print(len(end_pos), "end positions found with the find_all_pos function")
     db_functions.save_pos_list_to_db(all_pos)
     print(len(all_pos), "positions found and saved to database")
     print(db_functions.check_pos_db())
@@ -210,7 +210,7 @@ def find_opt_soln(starting_pos):
     while not(found_the_end):
         updated_latest_pos = []
         for pos in latest_pos:
-            for move in range(pos.piece_num * 4):
+            for move in range(Positions.PIECE_NUM * 4):
                 if pos.move_ok(move):
                     next_pos = pos.make_move(move)
                     # if next_pos has not been visited
@@ -230,7 +230,7 @@ def find_opt_soln(starting_pos):
         next_pos = soln_opt[-1]
         # potential_pos = pos_with_stepnum(curr_stepnum, all_att)
         potential_pos = [pos for pos in all_att if pos.stepnum == curr_stepnum]
-        for move in range(next_pos.piece_num * 4):
+        for move in range(Positions.PIECE_NUM * 4):
             if next_pos.move_ok(move):
                 pos = next_pos.make_move(move)
                 if pos in potential_pos:
@@ -253,7 +253,7 @@ def generate_soln_from_all_pos():
         curr_pos = soln[-1]
         # potential_pos = pos_with_stepnum(num_of_steps - i, all_pos)
         potential_pos = [pos for pos in all_pos if pos.stepnum == num_of_steps - i]
-        for move in range(4 * curr_pos.piece_num):
+        for move in range(4 * Positions.PIECE_NUM):
             if curr_pos.move_ok(move):
                 pos = curr_pos.make_move(move)
                 if pos in potential_pos:

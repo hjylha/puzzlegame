@@ -1,12 +1,12 @@
 # from puzzlegame_setup import *
-from puzzlegame_setup import num_of_rows, num_of_columns, all_pos, piece_nums, all_pieces, empty_num
+from puzzlegame_setup import NUM_OF_ROWS, NUM_OF_COLUMNS, all_pos, piece_nums, all_pieces, empty_num
 
 
 class Positions:
     # game's starting position:
     initial_positions = ((4, 0), (3, 1), (3, 2), (4, 3), (0, 0), (2, 0), (0, 3), (2, 3), (2, 1), (0, 1))
     initial_empties = ((4, 1), (4, 2))
-    piece_num = len(initial_positions)
+    PIECE_NUM = len(initial_positions)
 
     def __init__(self, pieces = initial_positions, stepnum = 0, dist_to_end = -1, pos_id = 0, neighbors = None):
         self.pieces = pieces
@@ -112,7 +112,7 @@ class Positions:
     def move_right_ok(self, piece_id):
         y, x = self.pieces[piece_id]
         width = all_pieces[piece_id][1]
-        if x >= num_of_columns - width:
+        if x >= NUM_OF_COLUMNS - width:
             return False
         height = all_pieces[piece_id][0]
         cover = self.pieces_cover()
@@ -135,7 +135,7 @@ class Positions:
     def move_down_ok(self, piece_id):
         y, x = self.pieces[piece_id]
         height = all_pieces[piece_id][0]
-        if y >= num_of_rows - height:
+        if y >= NUM_OF_ROWS - height:
             return False
         width = all_pieces[piece_id][1]
         cover = self.pieces_cover()
@@ -146,7 +146,7 @@ class Positions:
 
 
     def move_ok(self, move):
-        if move < 0 or move >= Positions.piece_num * 4:
+        if move < 0 or move >= Positions.PIECE_NUM * 4:
             return False
         if move % 4 == 0: # move.direction == "left":
             return self.move_left_ok(move//4)

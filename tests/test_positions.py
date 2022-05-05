@@ -85,7 +85,7 @@ def test_eq():
 
 
 @pytest.mark.parametrize(
-    'piece_id', list(range(positions.Positions.piece_num))
+    'piece_id', list(range(positions.Positions.PIECE_NUM))
 )
 def test_move_left_ok_default(pos, piece_id):
     # pos = positions.Positions()
@@ -99,7 +99,7 @@ def test_move_left_ok():
 
 
 @pytest.mark.parametrize(
-    'piece_id', list(range(positions.Positions.piece_num))
+    'piece_id', list(range(positions.Positions.PIECE_NUM))
 )
 def test_move_right_ok_default(pos, piece_id):
     # pos = positions.Positions()
@@ -113,7 +113,7 @@ def test_move_right_ok():
 
 
 @pytest.mark.parametrize(
-    'piece_id', list(range(positions.Positions.piece_num))
+    'piece_id', list(range(positions.Positions.PIECE_NUM))
 )
 def test_move_up_ok_default(pos, piece_id):
     # pos = positions.Positions()
@@ -124,7 +124,7 @@ def test_move_up_ok():
 
 
 @pytest.mark.parametrize(
-    'piece_id', list(range(positions.Positions.piece_num))
+    'piece_id', list(range(positions.Positions.PIECE_NUM))
 )
 def test_move_down_ok_default(pos, piece_id):
     # pos = positions.Positions()
@@ -138,7 +138,7 @@ def test_move_down_ok():
 
 
 @pytest.mark.parametrize(
-    'move', list(range(4 * positions.Positions.piece_num))
+    'move', list(range(4 * positions.Positions.PIECE_NUM))
 )
 def test_move_ok_default(pos, move):
     if move in (1, 7, 11, 12):
