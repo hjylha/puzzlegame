@@ -129,41 +129,79 @@ def does_db_exist():
         return False
     return perform_db_actions(try_select)
 
-def check_pos_db():
-    conn = sqlite3.connect("position.db")
-    c = conn.cursor()
 
-    c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from_end < ?", (0, ))
-    bad_count = c.fetchone()[0]
+def check_column(cursor, column_name):
+    cursor.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE {column_name} < ?", (0, ))
+    bad_count = cursor.fetchone()[0]
     if bad_count:
-        return False
-    c.execute(f"SELECT MAX(dist_from_end) FROM {POSITIONS_TABLE_NAME}")
-    max_dist_to_end = c.fetchone()[0]
-    for distance in range(max_dist_to_end + 1):
-        c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from_end = ?", (distance,))
-        count = c.fetchone()[0]
+        return (False, -1)
+    cursor.execute(f"SELECT MAX({column_name}) FROM {POSITIONS_TABLE_NAME}")
+    max_column_value = cursor.fetchone()[0]
+    for value in range(max_column_value + 1):
+        cursor.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE {column_name} = ?", (value,))
+        count = cursor.fetchone()[0]
         if count == 0:
-            return False
-    try:
-        c.execute("SELECT * FROM positions WHERE dist_from_end > -1")
-        test_list = c.fetchall()
-        test_list0 = [item for item in test_list if item[2] == 0]
-        if len(test_list) == 13011:
-            if len(test_list0) == 484:
-                conn.close()
-                return True
+            return (False, value)
+    return (True, None)
+
+# neighbor column should not have empty strings
+def check_neighbor_column(cursor):
+    cursor.execute(f"SELECT * FROM {POSITIONS_TABLE_NAME} WHERE neighbors = ?", ("",))
+    if cursor.fetchall():
+        return False
+    return True
+
+def check_db_columns(conn):
+    c = conn.cursor()
+    if not check_neighbor_column(c):
+        print("ERROR: Empty strings in neighbors column.")
+        return False
+    for name in ("dist_from_end", "dist_from_start", "id"):
+        is_ok, value = check_column(c, name)
+        if not is_ok:
+            if value == -1:
+                print(f"ERROR: Unassigned values in column {name}")
             else:
-                conn.close()
-                print("number of end positions in the database is not correct")
-                return False
-        elif len(test_list) > 0:
-            print(len(test_list))
-            print("Database has something, but also problems")
-        conn.close()
-        return False
-    except sqlite3.OperationalError:
-        conn.close()
-        return False
+                print(f"ERROR: No rows with value {value} in column {name}")
+            return False
+    return True
+
+def check_pos_db():
+    return perform_db_actions(check_db_columns)
+    # conn = sqlite3.connect("position.db")
+    # c = conn.cursor()
+
+    # c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from_end < ?", (0, ))
+    # bad_count = c.fetchone()[0]
+    # if bad_count:
+    #     return False
+    # c.execute(f"SELECT MAX(dist_from_end) FROM {POSITIONS_TABLE_NAME}")
+    # max_dist_to_end = c.fetchone()[0]
+    # for distance in range(max_dist_to_end + 1):
+    #     c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from_end = ?", (distance,))
+    #     count = c.fetchone()[0]
+    #     if count == 0:
+    #         return False
+    # try:
+    #     c.execute("SELECT * FROM positions WHERE dist_from_end > -1")
+    #     test_list = c.fetchall()
+    #     test_list0 = [item for item in test_list if item[2] == 0]
+    #     if len(test_list) == 13011:
+    #         if len(test_list0) == 484:
+    #             conn.close()
+    #             return True
+    #         else:
+    #             conn.close()
+    #             print("number of end positions in the database is not correct")
+    #             return False
+    #     elif len(test_list) > 0:
+    #         print(len(test_list))
+    #         print("Database has something, but also problems")
+    #     conn.close()
+    #     return False
+    # except sqlite3.OperationalError:
+    #     conn.close()
+    #     return False
 
 
 def save_pos_list_to_db(pos_list):

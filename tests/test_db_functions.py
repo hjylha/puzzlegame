@@ -12,7 +12,11 @@ import db_functions as dbf
 @pytest.fixture(scope='module')
 def db_path():
     path = Path(__file__).parent / 'test_db.db'
+    # maybe something went wrong before
+    if path.exists():
+        path.unlink()
     yield path
+    # delete the file if it exists after testing
     if path.exists():
         path.unlink()
 
@@ -119,6 +123,27 @@ class TestDB:
             assert pos.distance_to_end == pos0.distance_to_end
             assert pos.pos_id == pos0.pos_id
             assert pos.neighbors == pos0.neighbors
+
+    
+    @pytest.mark.parametrize(
+        ('column_name', 'expected_result'), [
+            ('id', (True, None)),
+            ('dist_from_end', (False, -1))
+        ]
+    )
+    def test_check_column(self, column_name, expected_result):
+        with dbf.sqlite3.connect(dbf.DB_FILEPATH) as conn:
+            c = conn.cursor()
+            assert dbf.check_column(c, column_name) == expected_result
+
+    def test_check_neighbor_column(self):
+        with dbf.sqlite3.connect(dbf.DB_FILEPATH) as conn:
+            c = conn.cursor()
+            assert not dbf.check_neighbor_column(c)
+    
+    def test_check_pos_db(self):
+        # maybe a lot of monkeypatching here???
+        pass
 
 
 class TestTransforms:
