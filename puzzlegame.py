@@ -12,8 +12,12 @@ class Puzzlegame:
         self.active_piece_for_dragging = -1
         # should this be the whole object or just the position tuple?
         self.index_opt = 0
-        self.current_pos = Positions().pieces
-        self.pos_log = [Positions().pieces]
+        # pos = Positions()
+        pos = dbf.get_pos_by_id(self.index_opt)
+        self.current_pos = pos.pieces
+        self.current_pos_id = pos.pos_id
+        self.possible_next_pos = dbf.get_pos_by_ids(pos.neighbors)
+        self.pos_log = [pos.pieces]
         self.move_log = []
         # solution stuff
         self.solution_mode = False
@@ -37,8 +41,12 @@ class Puzzlegame:
         self.active_piece = -1
         self.active_piece_for_dragging = -1
         self.index_opt = 0
-        self.current_pos = Positions().pieces
-        self.pos_log = [Positions().pieces]
+        # pos = Positions()
+        pos = dbf.get_pos_by_id(self.index_opt)
+        self.current_pos = pos.pieces
+        self.current_pos_id = pos.pos_id
+        self.possible_next_pos = dbf.get_pos_by_ids(pos.neighbors)
+        self.pos_log = [pos.pieces]
         self.move_log = []
         self.solution_mode = False
         # self.pos_log_opt = []
@@ -59,10 +67,20 @@ class Puzzlegame:
     # def deactivate(self):
     #     self.active_piece = -1
 
+    def update_id_and_neighbors(self):
+        curr_pos = Positions(self.current_pos)
+        for pos in self.possible_next_pos:
+            if curr_pos == pos:
+                self.current_pos_id = pos.pos_id
+                self.possible_next_pos = dbf.get_pos_by_ids(pos.neighbors)
+                break
+
     def make_move(self, move):
         pos = Positions(self.current_pos, self.index_opt)
         if pos.move_ok(move):
-            self.current_pos = pos.make_move(move).pieces
+            next_pos = pos.make_move(move)
+            self.current_pos = next_pos.pieces
+            self.update_id_and_neighbors()
             self.move_log.append(move)
             self.pos_log.append(self.current_pos)
             self.index_opt += 1
@@ -79,6 +97,7 @@ class Puzzlegame:
             self.move_log.pop()
             self.pos_log.pop()
             self.current_pos = self.pos_log[-1]
+            self.update_id_and_neighbors()
             self.index_opt -= 1
             if not(self.current_pos == self.pos_log[self.index_opt]):
                 print("problems!!!!")
@@ -97,6 +116,7 @@ class Puzzlegame:
                 return False
             else:
                 self.current_pos = self.pos_log_opt[self.index_opt - 1]
+                self.update_id_and_neighbors()
                 self.pos_log.pop()
                 self.move_log.pop()
                 self.index_opt -= 1
@@ -109,6 +129,7 @@ class Puzzlegame:
                 return False
             else:
                 self.current_pos = self.pos_log_opt[self.index_opt + 1]
+                self.update_id_and_neighbors()
                 self.pos_log.append(self.current_pos)
                 self.move_log.append(self.move_log_opt[self.index_opt])
                 self.index_opt += 1
@@ -120,22 +141,24 @@ class Puzzlegame:
         self.reset()
         self.solution_mode = True
         ##### Choose the first 2 or last 2 lines of the 4 next lines (file or database)
-        import solution_opt_117
-        pos_log_opt = solution_opt_117.pos_list
+        # import solution_opt_117
+        # pos_log_opt = solution_opt_117.pos_list
         # import puzzlesolver
         # pos_log_opt = puzzlesolver.find_soln_from_start()
+        pos_log_opt = dbf.find_opt_solution(self.current_pos_id)
         #####
         self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
         self.pos_log_opt = list(map(lambda x: x.pieces, pos_log_opt))
 
     def find_solution(self):
-        import puzzlesolver
         self.solution_mode = True
-        pos = Positions(self.current_pos, self.index_opt)
+        # pos = Positions(self.current_pos, self.index_opt)
         pos_log = [Positions(self.pos_log[i], i) for i in range(len(self.pos_log))]
         ##### Choose one of the two lines below (file or database)
         # pos_list = puzzlesolver.solve_opt_w_fd(pos)
-        pos_list = puzzlesolver.solve_opt_w_db(pos)
+        # import puzzlesolver
+        # pos_list = puzzlesolver.solve_opt_w_db(pos)
+        pos_list = dbf.find_opt_solution(self.current_pos_id)
         ##### 
         pos_log_opt = pl.combine_lists(pos_log, pos_list)
         self.move_log_opt = pl.move_list_from_pos_list(pos_log_opt)
