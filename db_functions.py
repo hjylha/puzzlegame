@@ -133,7 +133,7 @@ def check_pos_db():
     conn = sqlite3.connect("position.db")
     c = conn.cursor()
 
-    c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from end < ?", (0, ))
+    c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from_end < ?", (0, ))
     bad_count = c.fetchone()[0]
     if bad_count:
         return False
