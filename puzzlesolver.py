@@ -57,11 +57,11 @@ def solve_opt_w_fd(pos):
 def solve_opt_w_db(pos):
     import db_functions
     # checking database
-    if db_functions.does_db_exist():
-        if not(db_functions.check_pos_db()):
-            return False
-    else:
-        return False
+    # if db_functions.does_db_exist():
+    #     if not(db_functions.check_pos_db()):
+    #         return False
+    # else:
+    #     return False
     # actually solving problems
     all_pos = db_functions.load_pos_list_from_db()
     i_0 = all_pos.index(pos)
@@ -77,12 +77,12 @@ def solve_opt_w_db(pos):
 def find_soln_from_start():
     import db_functions
     # checking database
-    if db_functions.does_db_exist():
-        pass
-        if not(db_functions.check_pos_db()):
-            return False
-    else:
-        return False
+    # if db_functions.does_db_exist():
+    #     pass
+    #     if not(db_functions.check_pos_db()):
+    #         return False
+    # else:
+    #     return False
     # actually solving problems
     all_pos = db_functions.load_pos_list_from_db()
     pos_list = [pos for pos in all_pos if pos.stepnum == 0]

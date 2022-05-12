@@ -1,5 +1,6 @@
 from positions import Positions
 import position_lists as pl
+import db_functions as dbf
 
 class Puzzlegame:
 
@@ -18,6 +19,11 @@ class Puzzlegame:
         self.solution_mode = False
         self.pos_log_opt = []
         self.move_log_opt = []
+        if not dbf.does_db_exist():
+            print("NO DATABASE")
+            return
+        if not dbf.check_pos_db():
+            print("SOMETHING WRONG WITH DATABASE")
 
     def show_empties(self):
         return tuple(Positions(self.current_pos, self.index_opt).set_empties())
