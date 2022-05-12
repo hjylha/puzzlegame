@@ -141,9 +141,12 @@ class TestDB:
             c = conn.cursor()
             assert not dbf.check_neighbor_column(c)
     
-    def test_check_pos_db(self):
-        # maybe a lot of monkeypatching here???
-        pass
+    @pytest.mark.parametrize(
+        'check_passed', [True, False]
+    )
+    def test_check_pos_db(self, monkeypatch, check_passed):
+        monkeypatch.setattr(dbf, 'check_db_columns', lambda *args: check_passed)
+        assert dbf.check_pos_db() == check_passed
 
 
 class TestTransforms:

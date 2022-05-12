@@ -167,71 +167,39 @@ def check_db_columns(conn):
     return True
 
 def check_pos_db():
-    return perform_db_actions(check_db_columns)
-    # conn = sqlite3.connect("position.db")
-    # c = conn.cursor()
-
-    # c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from_end < ?", (0, ))
-    # bad_count = c.fetchone()[0]
-    # if bad_count:
-    #     return False
-    # c.execute(f"SELECT MAX(dist_from_end) FROM {POSITIONS_TABLE_NAME}")
-    # max_dist_to_end = c.fetchone()[0]
-    # for distance in range(max_dist_to_end + 1):
-    #     c.execute(f"SELECT COUNT(*) FROM {POSITIONS_TABLE_NAME} WHERE dist_from_end = ?", (distance,))
-    #     count = c.fetchone()[0]
-    #     if count == 0:
-    #         return False
-    # try:
-    #     c.execute("SELECT * FROM positions WHERE dist_from_end > -1")
-    #     test_list = c.fetchall()
-    #     test_list0 = [item for item in test_list if item[2] == 0]
-    #     if len(test_list) == 13011:
-    #         if len(test_list0) == 484:
-    #             conn.close()
-    #             return True
-    #         else:
-    #             conn.close()
-    #             print("number of end positions in the database is not correct")
-    #             return False
-    #     elif len(test_list) > 0:
-    #         print(len(test_list))
-    #         print("Database has something, but also problems")
-    #     conn.close()
-    #     return False
-    # except sqlite3.OperationalError:
-    #     conn.close()
-    #     return False
+    # check columns
+    if not perform_db_actions(check_db_columns):
+        return False
+    # check that initial position is in db
+    pos = get_pos_by_id(0)
+    if not pos:
+        return False
+    return pos == Positions()
 
 
-def save_pos_list_to_db(pos_list):
-    conn = sqlite3.connect(DB_FILEPATH)
+# moving on to inserting positions to db
+def insert_positions(conn, pos_list):
     c = conn.cursor()
     for pos in pos_list:
-        pieces = change_pos_tuple_to_string(pos.pieces)
-        neighbors = change_int_set_to_string(pos.neighbors)
-        # maybe distance_to_end has not been calculated yet
-        c.execute("INSERT INTO positions VALUES (?, ?, ?, ?, ?)", (pieces, pos.stepnum, pos.distance_to_end, pos.pos_id, neighbors))
-    conn.commit()
-    conn.close()
+        c.execute(f"INSERT INTO {POSITIONS_TABLE_NAME} VALUES (?, ?, ?, ?, ?)", position_to_table_row(pos))
 
-def load_pos_list_from_db():
-    conn = sqlite3.connect(DB_FILEPATH)
+    
+def save_pos_list_to_db(pos_list):
+    perform_db_actions(insert_positions, pos_list)
+
+
+# getting all positions from db
+def select_all_positions(conn):
     c = conn.cursor()
     c.execute(f"SELECT * FROM {POSITIONS_TABLE_NAME}")
     pos_list_raw = c.fetchall()
-    conn.close()
-    # format the pos list
-    pos_list = []
-    for item in pos_list_raw:
-        pos_coords = change_pos_string_to_tuple(item[0])
-        neighbors = change_neighbor_string_to_set(item[4])
-        pos = Positions(pos_coords, item[1], item[2], item[3], neighbors)
-        # pos.pos_id = item[3]
-        
-        pos_list.append(pos)
-    return pos_list
+    return [table_row_to_position(row) for row in pos_list_raw]
 
+def load_pos_list_from_db():
+    return perform_db_actions(select_all_positions)
+
+
+# and then getting positions with given ids
 def get_pos_by_id(pos_id):
     # command = f"SELECT * FROM {POSITIONS_TABLE_NAME} WHERE id = ?"
     data_row = perform_db_actions(select_pos_by_id, [pos_id])[0]
