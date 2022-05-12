@@ -210,3 +210,21 @@ def get_pos_by_ids(pos_ids):
     # command = f"SELECT * FROM {POSITIONS_TABLE_NAME} WHERE id = ?"
     data_rows = perform_db_actions(select_pos_by_id, list(pos_ids))
     return [table_row_to_position(row) for row in data_rows]
+
+
+def find_solution_from_db(conn, start_pos):
+    # start_pos = get_pos_by_id(start_pos_id)
+    pos_list = [start_pos]
+    c = conn.cursor()
+    while pos_list[-1].distance_to_end > 0:
+        ids = ", ".join(["?" for _ in pos_list[-1].neighbors])
+        command = f"SELECT * FROM {POSITIONS_TABLE_NAME} WHERE id IN ( {ids} ) AND dist_from_end < ?"
+        c.execute(command, list(pos_list[-1].neighbors) + [pos_list[-1].distance_to_end])
+        row = c.fetchone()
+        if row:
+            pos_list.append(table_row_to_position(row))
+    return pos_list
+
+def find_opt_solution(start_pos_id):
+    start_pos = get_pos_by_id(start_pos_id)
+    return perform_db_actions(find_solution_from_db, start_pos)
