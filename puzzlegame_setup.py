@@ -1,5 +1,7 @@
+from pathlib import Path
 
-directions = ("left", "right", "up", "down")
+TEXTS_FILE_PATH = Path(__file__).parent / "texts.txt"
+# directions = ("left", "right", "up", "down")
 piece_symbols = ("1", "2", "3", "4", "Q", "W", "E", "R", "S", "D")
 piece_colors = ("orange", "green", "yellow", "red")
 
@@ -27,3 +29,26 @@ def set_empty_num(piece_list, num_of_rows, num_of_columns):
 all_pieces = generate_piece_list(piece_nums, piece_types)
 PIECE_NUM = len(all_pieces)
 empty_num = set_empty_num(all_pieces, NUM_OF_ROWS, NUM_OF_COLUMNS)
+
+
+def read_texts_file():
+    text_lines = []
+    with open(TEXTS_FILE_PATH, "r", encoding="utf-8") as file:
+        raw_text = [line.strip().split(";") for line in file]
+    for line in raw_text:
+        text_lines.append((line[0], line[1], "\n".join(line[2].split("\\n"))))
+    return text_lines
+
+def get_languages():
+    languages = set()
+    for line in read_texts_file():
+        languages.add(line[1])
+    return tuple(languages)
+
+def get_texts_in_language(language):
+    raw_text = read_texts_file()
+    texts = dict()
+    for row in raw_text:
+        if row[1] == language:
+            texts[row[0]] = row[2]
+    return texts

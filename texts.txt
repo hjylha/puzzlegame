@@ -1,0 +1,44 @@
+DIRECTION0_TEXT;ENG;LEFT
+DIRECTION0_TEXT;FIN;VASEMMALLE
+DIRECTION1_TEXT;ENG;RIGHT
+DIRECTION1_TEXT;FIN;OIKEALLE
+DIRECTION2_TEXT;ENG;UP
+DIRECTION2_TEXT;FIN;YLÖS
+DIRECTION3_TEXT;ENG;DOWN
+DIRECTION3_TEXT;FIN;ALAS
+TITLE_TEXT;ENG;An interesting little puzzle to solve
+TITLE_TEXT;FIN;Mielenkiintoinen pikku ongelma
+LANGUAGE_TEXT;ENG;Language:
+LANGUAGE_TEXT;FIN;Kieli:
+SOLVED_TEXT;ENG;You have solved \n the puzzle!
+SOLVED_TEXT;FIN;Ratkaisit ongelman!
+NOT_SOLVED_TEXT;ENG;      
+NOT_SOLVED_TEXT;FIN;      
+RESTART_TEXT;ENG;Restart
+RESTART_TEXT;FIN;Aloita alusta
+UNDO_TEXT;ENG;Undo last move
+UNDO_TEXT;FIN;Kumoa edellinen siirto
+UNDONE_TEXT;ENG;Previous move undone
+UNDONE_TEXT;FIN;Siirto kumottu
+SHOW_SOLN_TEXT;ENG;Show solution \n from the start
+SHOW_SOLN_TEXT;FIN;Näytä ratkaisu \n alusta asti
+FIND_SOLN_TEXT;ENG;Find a solution
+FIND_SOLN_TEXT;FIN;Ratkaise
+SOLN_FOUND_TEXT;ENG;Solution found!
+SOLN_FOUND_TEXT;FIN;Ratkaisu löytyi!
+DESCR_TEXT;ENG;Move the red piece 'D'\n out of the game area.\n'D' can only exit the area\n through the center \n of the lower border.\nOther pieces cannot\n leave the game area.
+DESCR_TEXT;FIN;Siirrä punainen neliö \n 'D' \n mustasta aitauksesta pois \n alhaalla olevan \n aukon kautta. \n Muut palat eivät \n voi poistua aitauksesta.
+SOLN_HELP_TEXT;ENG;Use the '<<' \n and '>>' buttons \n to cycle through \n the solution
+SOLN_HELP_TEXT;FIN;Paina '<<'- ja \n '>>'-painikkeita, \n kun käyt läpi \n ratkaisun vaiheet
+BACK_TEXT;ENG;Going back
+BACK_TEXT;FIN;Palataan takaisin
+PIECE_TEXT;ENG;Piece
+PIECE_TEXT;FIN; 
+MOVE_TEXT;ENG;moves
+MOVE_TEXT;FIN;liikkuu
+NO_MOVE_TEXT;ENG;cannot move
+NO_MOVE_TEXT;FIN;ei voi liikkua
+NO_MOVE_TO_TEXT;ENG;cannot move to
+NO_MOVE_TO_TEXT;FIN;ei voi liikkua paikkaan
+SELECT_TEXT;ENG;is selected
+SELECT_TEXT;FIN;on valittu

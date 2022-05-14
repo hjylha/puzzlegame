@@ -1,16 +1,65 @@
+import tkinter as tk
+
+from pytest import param
+from puzzlegame_setup import all_pos, piece_nums, piece_types, all_pieces, PIECE_NUM, empty_num
+from puzzlegame_setup import piece_colors, piece_symbols, get_languages, get_texts_in_language
+from positions import Positions
+from puzzlegame import Puzzlegame
+import puzzlesolver as ps
+# import solution_opt_117
+
+
+class PuzzlegameParameters:
+    def __init__(self):
+        self.languages = get_languages()
+        self.current_language = self.languages[0]
+        self.texts = get_texts_in_language(self.current_language)
+        # self.directions = tuple([self.texts[f"direction{i}_TEXT"] for i in range(4)])
+        self.move_text = ('', '', '', '')
+    
+    def change_language(self):
+        self.current_language = self.languages[(self.languages.index(self.current_language) + 1) % len(self.languages)]
+        self.texts = get_texts_in_language(self.current_language)
+        # self.directions = tuple([self.texts[f"direction{i}"] for i in range(4)])
+        # if any(self.previous_move_text):
+        #     updated_move_text = []
+
+    def get_move_text(self):
+        text_parts = []
+        for text in self.move_text:
+            if "TEXT" in text:
+                text_parts.append(self.texts[text])
+            else:
+                text_parts.append(text)
+        return " ".join(text_parts)
+
+
 
 def play_puzzlegame():
-    import tkinter as tk
-    from puzzlegame_setup import all_pos, piece_nums, piece_types, all_pieces, PIECE_NUM, empty_num
-    from puzzlegame_setup import directions, piece_colors, piece_symbols
-    from positions import Positions
-    from puzzlegame import Puzzlegame
-    import puzzlesolver as ps
-    # import solution_opt_117
+
+    # some text stuff
+    params = PuzzlegameParameters()
+    # default_language = "FIN"
+    # texts = get_texts_in_language(default_language)
+    # directions = tuple([texts[f"direction{i}"] for i in range(4)])
+
+    def move_text(piece_id, move):
+        params.move_text = ("PIECE_TEXT", piece_symbols[piece_id], "MOVE_TEXT", f"DIRECTION{move % 4}_TEXT")
+        return params.get_move_text()
+    
+    def no_move_text(piece_id, num):
+        params.move_text = ("PIECE_TEXT", piece_symbols[piece_id], "NO_MOVE_TEXT", f"DIRECTION{num}_TEXT")
+        # return f"{params.texts['PIECE_TEXT']} {piece_symbols[piece_id]} {params.texts['NO_MOVE_TEXT']} {params.directions[num]}"
+        return params.get_move_text()
+    
+    def selection_text(piece_id):
+        params.move_text = ("PIECE_TEXT", piece_symbols[piece_id], "SELECT_TEXT", '')
+        return f"{params.get_move_text()}"
+        # return f"    {params.texts['PIECE_TEXT']} {piece_symbols[piece_id]} {params.texts['SELECT_TEXT']}    "
 
     # window with two frames on the left and one on the right
     main_window = tk.Tk()
-    main_window.title("An interesting little puzzle to solve")
+    main_window.title(params.texts["TITLE_TEXT"])
     # game_window = tk.LabelFrame(main_window, padx=1, pady=1)
     game_area = tk.LabelFrame(main_window, padx=1, pady=1)
     statusline = tk.LabelFrame(main_window, padx=1, pady=1)
@@ -53,9 +102,9 @@ def play_puzzlegame():
     def is_solved():
         if puzzlegame.is_solved():
         # if pos.pieces[-1] == (3,1):
-            solution_text.config(text="You have solved \n the puzzle!")
+            solution_text.config(text=params.texts["SOLVED_TEXT"])
         else:
-            solution_text.config(text="      ")
+            solution_text.config(text=params.texts["NOT_SOLVED_TEXT"])
 
     def show_generation_popup():
         from tkinter import messagebox
@@ -113,7 +162,8 @@ def play_puzzlegame():
         deactivate()
         puzzlegame.undo_move()
         place_pieces(pieces, empties)
-        statustexts[0].config(text="Previous move undone")
+        params.move_text = ("", "", "UNDONE_TEXT", "")
+        statustexts[0].config(text=params.get_move_text())
         is_solved()
         if puzzlegame.solution_mode:
             # index_opt = len(puzzlegame.move_log)
@@ -138,13 +188,13 @@ def play_puzzlegame():
             pieces[puzzlegame.active_piece].config(relief=tk.RAISED)
             puzzlegame.active_piece = piece_id
             pieces[piece_id].config(relief=tk.SUNKEN)
-            statustexts[0].config(text="    Piece " + piece_symbols[piece_id] + " is selected    ")
+            statustexts[0].config(text=selection_text(piece_id))
         else:
             # no pieces were active previously
             global_vars[0] = True
             puzzlegame.active_piece = piece_id
             pieces[piece_id].config(relief=tk.SUNKEN)
-            statustexts[0].config(text="    Piece " + piece_symbols[piece_id] + " is selected    ")
+            statustexts[0].config(text=selection_text(piece_id))
 
 
     def try_move(empty_id):
@@ -154,7 +204,11 @@ def play_puzzlegame():
         if global_vars[0]:
             move = current_pos.move_from_coord(puzzlegame.active_piece, empty_spot)
             if move == -1:
-                statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move to " + str(empty_spot))
+                # text = f"{params.texts['PIECE_TEXT']} {piece_symbols[puzzlegame.active_piece]} {params.texts['NO_MOVE_TO_TEXT']} {str(empty_spot)}"
+                # statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move to " + str(empty_spot))
+                params.move_text = ("PIECE_TEXT", piece_symbols[puzzlegame.active_piece], "NO_MOVE_TO_TEXT", str(empty_spot))
+                # statustexts[0].config(text=f"{params.texts['PIECE_TEXT']} {piece_symbols[puzzlegame.active_piece]} {params.texts['NO_MOVE_TO_TEXT']} {str(empty_spot)}")
+                statustexts[0].config(text=params.get_move_text())
             else:
                 if puzzlegame.move_log == []:
                     undo_button.config(state=tk.NORMAL)
@@ -166,45 +220,47 @@ def play_puzzlegame():
                     solving_text1.config(text="  ")
                     solving_text2.config(text="  ")
                 puzzlegame.make_move(move)
-                statustexts[0].config(text="Piece " + piece_symbols[puzzlegame.active_piece] + " moves " + directions[move%4])
+                # statustexts[0].config(text="Piece " + piece_symbols[puzzlegame.active_piece] + " moves " + params.directions[move%4])
+                statustexts[0].config(text=move_text(puzzlegame.active_piece, move))
                 place_pieces(pieces, empties)
         is_solved()
 
 
     def solution_from_start():
-        if not(ps.does_soln_117_file_exist()):
-            # solution file was not found
-            solving_text1.config(text="Solution file not found")
-            show_generation_popup2()
-            return
+        # if not(ps.does_soln_117_file_exist()):
+        #     # solution file was not found
+        #     solving_text1.config(text="Solution file not found")
+        #     show_generation_popup2()
+        #     return
         restart()
         puzzlegame.show_solution()
         solution_fwd.config(state=tk.NORMAL)
         statustexts[1].config(text=str(1) + " / " + str(len(puzzlegame.pos_log_opt)))
-        solving_text2.config(text="Use the '<<' \n and '>>' buttons \n to cycle through \n the solution")
+        solving_text2.config(text=params.texts["SOLN_HELP_TEXT"])
 
 
     def solution_from_pos():
-        if not(ps.does_all_pos_file_exist()):
-            # file all_pos_13011.py does not exist
-            solving_text1.config(text="Reference file not found")
-            show_generation_popup()
-            return
+        # if not(ps.does_all_pos_file_exist()):
+        #     # file all_pos_13011.py does not exist
+        #     solving_text1.config(text="Reference file not found")
+        #     show_generation_popup()
+        #     return
         puzzlegame.find_solution()
         # index_opt = len(puzzlegame.move_log)
         if puzzlegame.index_opt > 0:
             solution_back.config(state=tk.NORMAL)
         if puzzlegame.index_opt < len(puzzlegame.pos_log_opt) - 1:
             solution_fwd.config(state=tk.NORMAL)
-        solving_text1.config(text="Solution found!")
+        solving_text1.config(text=params.texts["SOLN_FOUND_TEXT"])
         statustexts[1].config(text=str(puzzlegame.index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
-        solving_text2.config(text="Use the '<<' \n and '>>' buttons \n to cycle through \n the solution")
+        solving_text2.config(text=params.texts["SOLN_HELP_TEXT"])
 
 
     def soln_back():
         if global_vars[0]:
             deactivate()
-        statustexts[0].config(text="Going back")
+        params.move_text = ("", "", "BACK_TEXT", "")
+        statustexts[0].config(text=params.get_move_text())
         puzzlegame.cycle_solution(0)
         # index_opt = len(puzzlegame.move_log)
         place_pieces(pieces, empties)
@@ -224,13 +280,36 @@ def play_puzzlegame():
             undo_button.config(state=tk.NORMAL)
         puzzlegame.cycle_solution(1)
         move = puzzlegame.move_log[-1]
-        statustexts[0].config(text="Piece " + piece_symbols[move//4] + " moves " + directions[move%4])
+        # statustexts[0].config(text="Piece " + piece_symbols[move//4] + " moves " + params.directions[move%4])
+        statustexts[0].config(text=move_text(move // 4, move))
         solution_back.config(state=tk.NORMAL)
         place_pieces(pieces, empties)
         if puzzlegame.index_opt == len(puzzlegame.move_log_opt):
             solution_fwd.config(state=tk.DISABLED)
         statustexts[1].config(text=str(puzzlegame.index_opt + 1) + " / " + str(len(puzzlegame.pos_log_opt)))
         is_solved()
+    
+
+    def change_language():
+        params.change_language()
+        main_window.title(params.texts["TITLE_TEXT"])
+        restart_button.config(text=params.texts["RESTART_TEXT"])
+        description.config(text=params.texts["DESCR_TEXT"])
+        undo_button.config(text=params.texts["UNDO_TEXT"])
+        show_soln_button.config(text=params.texts["SHOW_SOLN_TEXT"])
+        solve_button.config(text=params.texts["FIND_SOLN_TEXT"])
+        language_text.config(text=params.texts["LANGUAGE_TEXT"])
+        language_button.config(text=params.current_language)
+        if puzzlegame.is_solved():
+            # solving_text1.config(text=params.texts["SOLN_FOUND_TEXT"])
+            solution_text.config(text=params.texts["SOLVED_TEXT"])
+        if puzzlegame.solution_mode:
+            solving_text2.config(text=params.texts["SOLN_HELP_TEXT"])
+            if solving_text1.cget("text").strip():
+                solving_text1.config(text=params.texts["SOLN_FOUND_TEXT"])
+        if statustexts[0].cget("text").strip():
+            statustexts[0].config(text=params.get_move_text())
+            
 
     ####################### GUI VISIBLE STUFF
     # movable pieces
@@ -298,17 +377,15 @@ def play_puzzlegame():
     sidebuttons = []
     some_space_at_the_top = tk.Label(sideframe, text=" \n \n \n")
     sidebuttons.append(some_space_at_the_top)
-    restart_button = tk.Button(sideframe, text="Restart", width=20, command=restart)
+    restart_button = tk.Button(sideframe, text=params.texts["RESTART_TEXT"], width=20, command=restart)
     sidebuttons.append(restart_button)
-    description = tk.Label(sideframe, text="Move the red piece 'D'\n out of the game area.\n " +
-                                        "'D' can only exit the area\n through the center \n of the lower border.\n" +
-                                        "Other pieces cannot\n leave the game area.")
+    description = tk.Label(sideframe, text=params.texts["DESCR_TEXT"])
     sidebuttons.append(description)
-    undo_button = tk.Button(sideframe, text="Undo last move", width=20, state=tk.DISABLED, command=undo)
+    undo_button = tk.Button(sideframe, text=params.texts["UNDO_TEXT"], width=20, state=tk.DISABLED, command=undo)
     sidebuttons.append(undo_button)
-    show_soln_button = tk.Button(sideframe, text="Show a solution \n from the start", width=20, command=solution_from_start)
+    show_soln_button = tk.Button(sideframe, text=params.texts["SHOW_SOLN_TEXT"], width=20, command=solution_from_start)
     sidebuttons.append(show_soln_button)
-    solve_button = tk.Button(sideframe, text="Find a solution", width=20, command=solution_from_pos)
+    solve_button = tk.Button(sideframe, text=params.texts["FIND_SOLN_TEXT"], width=20, command=solution_from_pos)
     sidebuttons.append(solve_button)
     solving_text1 = tk.Label(sideframe, text="", width=20)
     sidebuttons.append(solving_text1)
@@ -316,14 +393,20 @@ def play_puzzlegame():
     sidebuttons.append(solving_text2)
     solution_text = tk.Label(sideframe, text="")
     sidebuttons.append(solution_text)
+    some_space_near_the_bottom = tk.Label(sideframe, text="\n")
+    sidebuttons.append(some_space_near_the_bottom)
+    language_text =  tk.Label(sideframe, text=params.texts["LANGUAGE_TEXT"])
+    sidebuttons.append(language_text)
+    language_button = tk.Button(sideframe, text=params.current_language, width=20, command=change_language)
+    sidebuttons.append(language_button)
 
     # putting the buttons onto the sideframe
     for i in range(len(sidebuttons)):
         sidebuttons[i].grid(row=i, column=0, padx=1, pady=5)
 
     # check file all_pos_13011.py
-    if not(ps.does_all_pos_file_exist()):
-        show_generation_popup()
+    # if not(ps.does_all_pos_file_exist()):
+    #     show_generation_popup()
 
     ################# KEYBINDS
     # selecting pieces (assuming default pieces)
@@ -354,12 +437,14 @@ def play_puzzlegame():
                     solving_text2.config(text="  ")
                 puzzlegame.make_move(move)
                 place_pieces(pieces, empties)
-                statustexts[0].config(text="Piece " + piece_symbols[puzzlegame.active_piece] + " moves " + directions[num])
+                # statustexts[0].config(text="Piece " + piece_symbols[puzzlegame.active_piece] + " moves " + params.directions[num])
+                statustexts[0].config(text=move_text(puzzlegame.active_piece, num))
                 is_solved()
             else:
                 # big piece cannot actually move down to complete the puzzle, but no need to point this out
                 if not(move == 39 and puzzlegame.current_pos[-1] == (3, 1)):
-                    statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move " + directions[num])
+                    # statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move " + params.directions[num])
+                    statustexts[0].config(text=no_move_text(puzzlegame.active_piece, num))
 
     def try_left(event):
         try_move_direction(0)
