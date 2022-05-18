@@ -10,6 +10,10 @@ start_time = time.time()
 import puzzlesolver as ps
 ps.generate_pos_db()
 
+
+import db_functions as dbf
+dbf.generate_language_table()
+
 # end time
 end_time = time.time()
 elapsed_time = end_time - start_time

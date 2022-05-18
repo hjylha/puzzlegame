@@ -1,8 +1,8 @@
 import tkinter as tk
 
-from pytest import param
 from puzzlegame_setup import all_pos, piece_nums, piece_types, all_pieces, PIECE_NUM, empty_num
 from puzzlegame_setup import piece_colors, piece_symbols, get_languages, get_texts_in_language
+from db_functions import get_default_language, set_default_language
 from positions import Positions
 from puzzlegame import Puzzlegame
 import puzzlesolver as ps
@@ -12,7 +12,8 @@ import puzzlesolver as ps
 class PuzzlegameParameters:
     def __init__(self):
         self.languages = get_languages()
-        self.current_language = self.languages[0]
+        # self.current_language = self.languages[0]
+        self.current_language = get_default_language()
         self.texts = get_texts_in_language(self.current_language)
         # self.directions = tuple([self.texts[f"direction{i}_TEXT"] for i in range(4)])
         self.move_text = ('', '', '', '')
@@ -20,6 +21,7 @@ class PuzzlegameParameters:
     def change_language(self):
         self.current_language = self.languages[(self.languages.index(self.current_language) + 1) % len(self.languages)]
         self.texts = get_texts_in_language(self.current_language)
+        set_default_language(self.current_language)
         # self.directions = tuple([self.texts[f"direction{i}"] for i in range(4)])
         # if any(self.previous_move_text):
         #     updated_move_text = []
