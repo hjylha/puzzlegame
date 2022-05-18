@@ -150,6 +150,10 @@ class TestDB:
         assert any(default_values)
         assert not all(default_values)
 
+    def test_get_languages(self, languages):
+        # language_list = dbf.get_languages()
+        assert dbf.get_languages() == list(languages)
+
     @pytest.mark.parametrize(
         'index', [0, 1]
     )

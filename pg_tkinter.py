@@ -1,8 +1,8 @@
 import tkinter as tk
 
 from puzzlegame_setup import all_pos, piece_nums, piece_types, all_pieces, PIECE_NUM, empty_num
-from puzzlegame_setup import piece_colors, piece_symbols, get_languages, get_texts_in_language
-from db_functions import get_default_language, set_default_language
+from puzzlegame_setup import piece_colors, piece_symbols, get_texts_in_language
+from db_functions import get_languages, get_default_language, set_default_language
 from positions import Positions
 from puzzlegame import Puzzlegame
 import puzzlesolver as ps

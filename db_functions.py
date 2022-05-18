@@ -252,6 +252,18 @@ def generate_language_table():
     perform_db_actions(save_languages_to_db, languages)
 
 
+def get_languages():
+    
+    def select_languages(conn):
+        c = conn.cursor()
+        command = f"SELECT abbreviation FROM {LANGUAGE_TABLE_NAME}"
+        c.execute(command)
+        return c.fetchall()
+    
+    language_rows = perform_db_actions(select_languages)
+    return [row[0] for row in language_rows]
+
+
 def set_default_language(new_default_language):
     perform_db_actions(set_default_language_action, new_default_language)
 
