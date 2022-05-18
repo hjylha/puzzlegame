@@ -1,3 +1,4 @@
+from email.policy import default
 from pathlib import Path
 from random import randint
 
@@ -40,6 +41,10 @@ def pos_list0():
     return pos_list
 
 
+@pytest.fixture(scope='module')
+def languages():
+    return ('ENG', 'SWE')
+
 
 # @pytest.fixture(scope='module')
 # def db(db_path):
@@ -71,7 +76,10 @@ class TestDB:
             c = conn.cursor()
             c.execute(f'SELECT * FROM {dbf.POSITIONS_TABLE_NAME}')
             stuff = c.fetchall()
+            c.execute(F"SELECT * FROM {dbf.LANGUAGE_TABLE_NAME}")
+            more_stuff = c.fetchall()
         assert stuff is not None
+        assert more_stuff is not None
 
     def test_reset_pos_db(self):
         with dbf.sqlite3.connect(dbf.DB_FILEPATH) as conn:
@@ -87,7 +95,10 @@ class TestDB:
             c = conn.cursor()
             c.execute(f'SELECT * FROM {dbf.POSITIONS_TABLE_NAME}')
             stuff = c.fetchall()
+            c.execute(F"SELECT * FROM {dbf.LANGUAGE_TABLE_NAME}")
+            more_stuff = c.fetchall()
         assert not stuff
+        assert more_stuff is not None
 
     def test_save_pos_list_to_db(self, pos_list0):
         dbf.save_pos_list_to_db(pos_list0)
@@ -123,6 +134,30 @@ class TestDB:
             assert pos.distance_to_end == pos0.distance_to_end
             assert pos.pos_id == pos0.pos_id
             assert pos.neighbors == pos0.neighbors
+
+
+    def test_generate_language_table(self, monkeypatch, languages):
+        monkeypatch.setattr(dbf, 'get_languages', lambda *args: languages)
+        dbf.generate_language_table()
+
+        with dbf.sqlite3.connect(dbf.DB_FILEPATH) as conn:
+            c = conn.cursor()
+            c.execute(f'SELECT * FROM {dbf.LANGUAGE_TABLE_NAME}')
+            language_rows = c.fetchall()
+        assert language_rows
+        assert [l for l, _, _ in language_rows] == list(languages)
+        default_values = [row[1] for row in language_rows]
+        assert any(default_values)
+        assert not all(default_values)
+
+    @pytest.mark.parametrize(
+        'index', [0, 1]
+    )
+    def test_set_default_language(self, index, languages):
+        dbf.set_default_language(languages[index])
+
+        assert dbf.get_default_language() == languages[index]
+
 
     
     @pytest.mark.parametrize(

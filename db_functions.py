@@ -1,12 +1,13 @@
 from pathlib import Path
 import sqlite3
 from positions import Positions
-from puzzlegame_setup import NUM_OF_ROWS
+from puzzlegame_setup import NUM_OF_ROWS, get_languages
 
 DB_FILENAME = "position.db"
 DB_FILEPATH = Path(__file__).parent / DB_FILENAME
 
 POSITIONS_TABLE_NAME = "positions"
+LANGUAGE_TABLE_NAME = "languages"
 
 
 # first some functions to change data to suitable form
@@ -112,15 +113,24 @@ def create_pos_db_command():
     )
         """
 
+def create_language_table_command():
+    return f"""CREATE TABLE {LANGUAGE_TABLE_NAME} (
+        abbreviation TEXT UNIQUE NOT NULL,
+        default_language INTEGER NOT NULL,
+        description TEXT )"""
+
 
 # Is this a good way to structure the database???
 def create_pos_db():
-    perform_db_commands(create_pos_db_command())
+    perform_db_commands(create_pos_db_command(), create_language_table_command())
     print(f"Database '{DB_FILENAME}' created")
 
 
 def reset_pos_db():
-    perform_db_commands(f"DROP TABLE {POSITIONS_TABLE_NAME}", create_pos_db_command())
+    perform_db_commands(f"DROP TABLE {POSITIONS_TABLE_NAME}", 
+                        f"DROP TABLE {LANGUAGE_TABLE_NAME}", 
+                        create_pos_db_command(),
+                        create_language_table_command())
     print(f"Database '{DB_FILENAME}' reset")
 
 
@@ -210,6 +220,43 @@ def get_pos_by_ids(pos_ids):
     # command = f"SELECT * FROM {POSITIONS_TABLE_NAME} WHERE id = ?"
     data_rows = perform_db_actions(select_pos_by_id, list(pos_ids))
     return [table_row_to_position(row) for row in data_rows]
+
+
+def save_languages_to_db(conn, language_list):
+    cursor = conn.cursor()
+    for i, language in enumerate(language_list):
+        row = (language, False if i != 0 else True, "")
+        cursor.execute(f"INSERT INTO {LANGUAGE_TABLE_NAME} VALUES ( ?, ?, ? )", row)
+        # conn.commit()
+
+
+def set_default_language_action(conn, new_default_language):
+    cursor = conn.cursor()
+    command = f"SELECT rowid FROM {LANGUAGE_TABLE_NAME} WHERE default_language= ?"
+    cursor.execute(command, (True, ))
+    if rowid := cursor.fetchone()[0]:
+        command = f"UPDATE {LANGUAGE_TABLE_NAME} SET default_language= ? WHERE rowid = ?"
+        cursor.execute(command, (False, rowid))
+    command = f"UPDATE {LANGUAGE_TABLE_NAME} SET default_language= ? WHERE abbreviation = ?"
+    cursor.execute(command, (True, new_default_language))
+
+
+def get_default_language_action(conn):
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT abbreviation FROM {LANGUAGE_TABLE_NAME} WHERE default_language= ?", (True,))
+    return cursor.fetchone()[0]
+
+
+def generate_language_table():
+    languages = get_languages()
+    perform_db_actions(save_languages_to_db, languages)
+
+
+def set_default_language(new_default_language):
+    perform_db_actions(set_default_language_action, new_default_language)
+
+def get_default_language():
+    return perform_db_actions(get_default_language_action)
 
 
 def find_solution_from_db(conn, start_pos):
