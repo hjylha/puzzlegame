@@ -1,12 +1,10 @@
 import tkinter as tk
 
-from puzzlegame_setup import all_pos, piece_nums, piece_types, all_pieces, PIECE_NUM, empty_num
+from puzzlegame_setup import piece_nums, piece_types, all_pieces
 from puzzlegame_setup import piece_colors, piece_symbols, get_texts_in_language
 from db_functions import get_languages_from_db, get_default_language, set_default_language
 from positions import Positions
 from puzzlegame import Puzzlegame
-import puzzlesolver as ps
-# import solution_opt_117
 
 
 class PuzzlegameParameters:
@@ -42,8 +40,6 @@ def play_puzzlegame():
     # some text stuff
     params = PuzzlegameParameters()
     # default_language = "FIN"
-    # texts = get_texts_in_language(default_language)
-    # directions = tuple([texts[f"direction{i}"] for i in range(4)])
 
     def move_text(piece_id, move):
         params.move_text = ("PIECE_TEXT", piece_symbols[piece_id], "MOVE_TEXT", f"DIRECTION{move % 4}_TEXT")
@@ -107,37 +103,6 @@ def play_puzzlegame():
             solution_text.config(text=params.texts["SOLVED_TEXT"])
         else:
             solution_text.config(text=params.texts["NOT_SOLVED_TEXT"])
-
-    def show_generation_popup():
-        from tkinter import messagebox
-        explanation = "The file all_pos_13011.py was not found. It is needed for finding optimal solutions fast. Do you want to generate this file now? The process may take a couple of hours."
-        start_generating = messagebox.askyesno("Generating positions", explanation)
-        if start_generating:
-            # final check about whether the files exist already
-            if not(ps.does_all_pos_file_exist()):
-                solving_text1.config(text="Generating files, please wait")
-                print("Generating files...")
-                ps.generate_pos_files()
-                solving_text1.config(text="File generated")
-
-    def show_generation_popup2():
-        from tkinter import messagebox
-        explanation = "The file containing optimal solution was not found. Do you want to calculate the optimal solution? The process may take a couple of hours."
-        start_generating = messagebox.askyesno("Generating optimal solution", explanation)
-        if start_generating:
-            if not(ps.does_soln_117_file_exist()):
-                if ps.does_all_pos_file_exist():
-                    solving_text1.config(text="Finding solution, please wait")
-                    print("Finding solution from Big Data")
-                    ps.generate_soln_from_all_pos()
-                    solving_text1.config(text="Solution found")
-                    solution_from_start()
-                else:
-                    solving_text1.config(text="Finding solution, please wait")
-                    print("Solving...")
-                    ps.generate_soln()
-                    solving_text1.config(text="Solution found")
-                    solution_from_start()
 
     def deactivate():
         if global_vars[0]:
@@ -206,7 +171,6 @@ def play_puzzlegame():
         if global_vars[0]:
             move = current_pos.move_from_coord(puzzlegame.active_piece, empty_spot)
             if move == -1:
-                # text = f"{params.texts['PIECE_TEXT']} {piece_symbols[puzzlegame.active_piece]} {params.texts['NO_MOVE_TO_TEXT']} {str(empty_spot)}"
                 # statustexts[0].config(text=piece_symbols[puzzlegame.active_piece] + " cannot move to " + str(empty_spot))
                 params.move_text = ("PIECE_TEXT", piece_symbols[puzzlegame.active_piece], "NO_MOVE_TO_TEXT", str(empty_spot))
                 # statustexts[0].config(text=f"{params.texts['PIECE_TEXT']} {piece_symbols[puzzlegame.active_piece]} {params.texts['NO_MOVE_TO_TEXT']} {str(empty_spot)}")
@@ -229,11 +193,6 @@ def play_puzzlegame():
 
 
     def solution_from_start():
-        # if not(ps.does_soln_117_file_exist()):
-        #     # solution file was not found
-        #     solving_text1.config(text="Solution file not found")
-        #     show_generation_popup2()
-        #     return
         restart()
         puzzlegame.show_solution()
         solution_fwd.config(state=tk.NORMAL)
@@ -242,11 +201,6 @@ def play_puzzlegame():
 
 
     def solution_from_pos():
-        # if not(ps.does_all_pos_file_exist()):
-        #     # file all_pos_13011.py does not exist
-        #     solving_text1.config(text="Reference file not found")
-        #     show_generation_popup()
-        #     return
         puzzlegame.find_solution()
         # index_opt = len(puzzlegame.move_log)
         if puzzlegame.index_opt > 0:
@@ -406,9 +360,6 @@ def play_puzzlegame():
     for i in range(len(sidebuttons)):
         sidebuttons[i].grid(row=i, column=0, padx=1, pady=5)
 
-    # check file all_pos_13011.py
-    # if not(ps.does_all_pos_file_exist()):
-    #     show_generation_popup()
 
     ################# KEYBINDS
     # selecting pieces (assuming default pieces)
