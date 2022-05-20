@@ -252,7 +252,7 @@ def generate_language_table():
     perform_db_actions(save_languages_to_db, languages)
 
 
-def get_languages():
+def get_languages_from_db():
     
     def select_languages(conn):
         c = conn.cursor()

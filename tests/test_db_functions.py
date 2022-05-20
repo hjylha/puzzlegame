@@ -152,7 +152,7 @@ class TestDB:
 
     def test_get_languages(self, languages):
         # language_list = dbf.get_languages()
-        assert dbf.get_languages() == list(languages)
+        assert dbf.get_languages_from_db() == list(languages)
 
     @pytest.mark.parametrize(
         'index', [0, 1]
