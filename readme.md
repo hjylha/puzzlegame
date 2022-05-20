@@ -16,8 +16,8 @@ This is the real life puzzle which inspired this project.
 ![puzzle in real life](rl_puzzle.PNG)
 
 
-### Currently working on
-- Database and file checks should be updated
+<!-- ### Currently working on
+- Database and file checks should be updated -->
 
 
 
