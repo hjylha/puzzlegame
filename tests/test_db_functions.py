@@ -162,6 +162,10 @@ class TestDB:
 
         assert dbf.get_default_language() == languages[index]
 
+    def test_check_language_table(self, monkeypatch):
+        monkeypatch.setattr(dbf, 'get_texts_in_language', lambda *args: True)
+        assert dbf.perform_db_actions(dbf.check_language_table)
+
 
     
     @pytest.mark.parametrize(
@@ -184,7 +188,8 @@ class TestDB:
         'check_passed', [True, False]
     )
     def test_check_pos_db(self, monkeypatch, check_passed):
-        monkeypatch.setattr(dbf, 'check_db_columns', lambda *args: check_passed)
+        monkeypatch.setattr(dbf, 'get_texts_in_language', lambda *args: check_passed)
+        monkeypatch.setattr(dbf, 'check_pos_columns', lambda *args: check_passed)
         assert dbf.check_pos_db() == check_passed
 
 
