@@ -150,7 +150,7 @@ class TestDB:
         assert any(default_values)
         assert not all(default_values)
 
-    def test_get_languages(self, languages):
+    def test_get_languages_from_db(self, languages):
         # language_list = dbf.get_languages()
         assert dbf.get_languages_from_db() == list(languages)
 

@@ -1,7 +1,7 @@
 from pathlib import Path
 import sqlite3
 from positions import Positions
-from puzzlegame_setup import NUM_OF_ROWS, get_languages
+from puzzlegame_setup import NUM_OF_ROWS, get_languages, get_texts_in_language
 
 DB_FILENAME = "position.db"
 DB_FILEPATH = Path(__file__).parent / DB_FILENAME
@@ -161,7 +161,7 @@ def check_neighbor_column(cursor):
         return False
     return True
 
-def check_db_columns(conn):
+def check_pos_columns(conn):
     c = conn.cursor()
     if not check_neighbor_column(c):
         print("ERROR: Empty strings in neighbors column.")
@@ -176,9 +176,24 @@ def check_db_columns(conn):
             return False
     return True
 
+def check_language_table(conn):
+    c = conn.cursor()
+    c.execute(f"SELECT * FROM {LANGUAGE_TABLE_NAME}")
+    language_rows = c.fetchall()
+    if not language_rows:
+        print("ERROR: No languages saved to database.")
+        return False
+    for language in [l for l, _, _ in language_rows]:
+        if not get_texts_in_language(language):
+            return False
+    return any([default_l for _, default_l, _ in language_rows])
+
 def check_pos_db():
+    # check languages
+    if not perform_db_actions(check_language_table):
+        return False
     # check columns
-    if not perform_db_actions(check_db_columns):
+    if not perform_db_actions(check_pos_columns):
         return False
     # check that initial position is in db
     pos = get_pos_by_id(0)
